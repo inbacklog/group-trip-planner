@@ -2,6 +2,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type FormEvent,
   type ReactNode,
 } from "react";
@@ -65,7 +66,7 @@ import {
   safeExternalUrl,
   type PrivateTripImport,
 } from "./lib/privateImport";
-import { pendingInvite, storeInvite } from "./lib/invites";
+import { pendingInvite, storeInvite, subscribeInvite } from "./lib/invites";
 import "./styles.css";
 
 function routeTo(group?: string, trip?: string) {
@@ -244,9 +245,11 @@ function JourneyArt() {
 }
 
 function Auth({
+  invite,
   onRecoveryDone,
   recovery = false,
 }: {
+  invite: string;
   onRecoveryDone: () => void;
   recovery?: boolean;
 }) {
@@ -266,7 +269,6 @@ function Auth({
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const invite = pendingInvite();
   useEffect(() => {
     const url = new URL(location.href);
     const fragment = new URLSearchParams(url.hash.slice(1));
@@ -566,6 +568,7 @@ function Auth({
 }
 
 export default function App() {
+  const invite = useSyncExternalStore(subscribeInvite, pendingInvite);
   const [session, setSession] = useState<Session | null>(null);
   const [checking, setChecking] = useState(true);
   const [recovery, setRecovery] = useState(false);
@@ -584,7 +587,6 @@ export default function App() {
       setChecking(false);
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
       if (event === "SIGNED_OUT") {
-        storeInvite("");
         routeTo();
         setRecovery(false);
       }
@@ -611,22 +613,38 @@ export default function App() {
     return (
       <>
         {authError && <Notice>{authError}</Notice>}
-        <Auth recovery={recovery} onRecoveryDone={() => setRecovery(false)} />
+        <Auth
+          invite={invite}
+          recovery={recovery}
+          onRecoveryDone={() => setRecovery(false)}
+        />
       </>
     );
-  return <Dashboard key={session.user.id} session={session} />;
+  return <Dashboard key={session.user.id} session={session} invite={invite} />;
 }
 
-function Dashboard({ session }: { session: Session }) {
+function Dashboard({
+  session,
+  invite,
+}: {
+  session: Session;
+  invite: string;
+}) {
   const [revision, setRevision] = useState(0);
   const [groupId, setGroupId] = useState(
     () => new URLSearchParams(location.search).get("group") ?? "",
   );
   const [createOpen, setCreateOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
-  const [invite, setInvite] = useState(pendingInvite);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const inviteBanner = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (invite) {
+      setError("");
+      inviteBanner.current?.scrollIntoView({ block: "nearest" });
+    }
+  }, [invite]);
   const state = useAsyncData(
     (signal) => api.getGroups(signal),
     [session.user.id, revision],
@@ -641,21 +659,25 @@ function Dashboard({ session }: { session: Session }) {
     setError("");
   }
   async function accept() {
+    const attemptedToken = invite;
+    if (!attemptedToken) return;
     setBusy(true);
     setError("");
     try {
-      const id = await api.acceptInvitation(invite);
-      storeInvite("");
-      setInvite("");
+      const id = await api.acceptInvitation(attemptedToken);
+      if (pendingInvite() === attemptedToken) storeInvite("");
       setGroupId(id);
       routeTo(id);
       refresh();
     } catch (err) {
-      setError(explainError(err));
       const message = (err as { message?: string })?.message ?? "";
-      if (/invalid|expired|revoked|already.*member|not.*valid/i.test(message)) {
-        storeInvite("");
-        setInvite("");
+      if (pendingInvite() === attemptedToken) {
+        setError(explainError(err));
+        if (
+          /invitation unavailable|invalid.*invit|invit.*(invalid|expired|revoked)|already.*member/i.test(message)
+        ) {
+          storeInvite("");
+        }
       }
       refresh();
     } finally {
@@ -666,7 +688,6 @@ function Dashboard({ session }: { session: Session }) {
     setBusy(true);
     setError("");
     storeInvite("");
-    setInvite("");
     setGroupId("");
     routeTo();
     try {
@@ -779,7 +800,7 @@ function Dashboard({ session }: { session: Session }) {
         <div className="content-wrap">
           {error && <Notice>{error}</Notice>}
           {invite && (
-            <section className="invite-banner">
+            <section className="invite-banner" ref={inviteBanner}>
               <div className="invite-banner-icon">
                 <Link2 size={24} />
               </div>
@@ -800,7 +821,6 @@ function Dashboard({ session }: { session: Session }) {
                 className="icon-button"
                 onClick={() => {
                   storeInvite("");
-                  setInvite("");
                 }}
                 aria-label="Απόρριψη πρόσκλησης"
               >

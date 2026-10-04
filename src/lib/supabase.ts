@@ -54,7 +54,11 @@ export function explainError(error: unknown): string {
     return "Η σύνδεσή σου έληξε. Συνδέσου ξανά.";
   if (/rate limit|too many requests/i.test(message))
     return "Έγιναν πολλές προσπάθειες. Περίμενε λίγο και δοκίμασε ξανά.";
-  if (/invalid.*invit|invit.*(invalid|expired|revoked)/i.test(message))
-    return "Η πρόσκληση δεν είναι έγκυρη ή έχει λήξει.";
+  if (/already.*member/i.test(message))
+    return "Είσαι ήδη μέλος αυτής της παρέας. Άνοιξε την ομάδα από τις παρέες σου.";
+  if (
+    /invitation unavailable|invalid.*invit|invit.*(invalid|expired|revoked)/i.test(message)
+  )
+    return "Η πρόσκληση δεν είναι διαθέσιμη: μπορεί να έχει λήξει, να έχει χρησιμοποιηθεί ή να έχει ανακληθεί. Ζήτησε νέο σύνδεσμο από τον διαχειριστή.";
   return message;
 }
