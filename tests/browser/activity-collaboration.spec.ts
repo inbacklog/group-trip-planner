@@ -457,7 +457,16 @@ test("ordinary member only edits their own comments and conflict refresh retriev
   await section
     .getByRole("button", { name: "Αποθήκευση σχολίου", exact: true })
     .click();
-  await expect(section.getByRole("alert")).toContainText("Έγινε αλλαγή από άλλο μέλος");
+  await expect(section.getByRole("alert")).toContainText(
+    "Έγινε νεότερη αλλαγή από άλλο μέλος ή άλλη συσκευή.",
+  );
+  await expect(section.getByRole("alert")).toContainText(
+    "Ανανέωσε τα στοιχεία και έλεγξε τις αλλαγές πριν αποθηκεύσεις ξανά.",
+  );
+  // A conflict must retain this tab's unsaved draft until explicit refresh.
+  await expect(
+    section.getByLabel("Επεξεργασία σχολίου", { exact: true }),
+  ).toHaveValue("Αλλαγή από αυτή την καρτέλα.");
   expect(state.mutations.at(-1)?.body.p_expected_version).toBe(1);
   await section
     .getByRole("button", {
@@ -485,20 +494,34 @@ test("admin deletion is confirmed and revoked snapshot clears the whole private 
   await section
     .getByRole("button", { name: "Διαγραφή σχολίου", exact: true })
     .click();
+  const refreshButton = section.getByRole("button", {
+    name: "Ανανέωση προτιμήσεων και σχολίων",
+    exact: true,
+  });
+  // A successful mutation starts an automatic snapshot reload. During that
+  // reload *all* comments are temporarily absent, so disappearance alone is
+  // not proof that deletion has finished. Let that reload settle before
+  // simulating revocation; otherwise it may correctly close the dialog before
+  // the test has a chance to click the manual refresh button.
+  await expect(
+    section.getByRole("status").filter({ hasText: "Το σχόλιο διαγράφηκε." }),
+  ).toBeVisible();
+  await expect(refreshButton).toBeEnabled();
+  await expect(section.locator(".comment-list")).toBeVisible();
+  await expect(section.locator(".activity-comment")).toHaveCount(1);
+  await expect(
+    section.getByText("Το αρχικό μου σχόλιο.", { exact: true }),
+  ).toBeVisible();
   await expect(
     section.getByText("Μήπως να πάμε το πρωί;", { exact: true }),
   ).toHaveCount(0);
+  expect(state.mutations).toHaveLength(1);
   expect(state.mutations[0].body).toEqual({
     p_comment_id: OTHER_COMMENT_ID,
     p_expected_version: 1,
   });
   state.loseAccess = true;
-  await section
-    .getByRole("button", {
-      name: "Ανανέωση προτιμήσεων και σχολίων",
-      exact: true,
-    })
-    .click();
+  await refreshButton.click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
     page.getByText("Το αρχικό μου σχόλιο.", { exact: true }),

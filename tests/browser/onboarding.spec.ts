@@ -304,8 +304,13 @@ test("schema errors stay explicit without silently showing a demo", async ({
 }) => {
   await installFixture(page, { signedIn: true, failGroups: true });
   await page.goto("/");
-  await expect(page.getByRole("alert")).toContainText(
-    "Η βάση δεδομένων δεν είναι έτοιμη",
+  const alert = page.getByRole("alert");
+  await expect(alert).toContainText("Λείπει ενημέρωση της βάσης.");
+  await expect(alert).toContainText(
+    "Σε υπάρχουσα εφαρμογή εφαρμόζεις μόνο τα νέα migrations",
+  );
+  await expect(alert).toContainText(
+    "Το supabase/INSTALL_ALL.sql είναι μόνο για εντελώς νέα εγκατάσταση.",
   );
   await expect(page.locator(".group-card")).toHaveCount(0);
   await expect(

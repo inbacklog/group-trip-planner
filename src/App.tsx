@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   useSyncExternalStore,
@@ -2501,6 +2502,7 @@ function ItemModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const stopLabelId = useId();
   const [title, setTitle] = useState(item?.title ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [why, setWhy] = useState(item?.why_visit ?? "");
@@ -2556,8 +2558,12 @@ function ItemModal({
           />
         </label>
         <label>
-          Στάση
-          <select value={stopId} onChange={(e) => setStopId(e.target.value)}>
+          <span id={stopLabelId}>Στάση</span>
+          <select
+            aria-labelledby={stopLabelId}
+            value={stopId}
+            onChange={(e) => setStopId(e.target.value)}
+          >
             <option value="">Χωρίς συγκεκριμένη στάση</option>
             {stops.map((s) => (
               <option key={s.id} value={s.id}>
