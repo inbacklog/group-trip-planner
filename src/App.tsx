@@ -38,6 +38,7 @@ import {
   Trash2,
   Upload,
   Users,
+  UserRound,
   X,
 } from "lucide-react";
 import {
@@ -68,6 +69,9 @@ import {
 } from "./lib/privateImport";
 import { pendingInvite, storeInvite, subscribeInvite } from "./lib/invites";
 import "./styles.css";
+import "./components/upgrades.css";
+import { MoneyDisplay, MoneyFields } from "./components/MoneyDisplay";
+import { toCostDraft, saveCostDraft } from "./lib/money";
 
 function routeTo(group?: string, trip?: string) {
   const url = new URL(location.href);
@@ -635,6 +639,11 @@ function Dashboard({
     () => new URLSearchParams(location.search).get("group") ?? "",
   );
   const [createOpen, setCreateOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [profileOverride, setProfileOverride] = useState<api.Profile | null>(null);
+  const profileState = useAsyncData((signal) => api.getMyProfile(signal), [session.user.id]);
+  const accountName = (profileOverride ?? profileState.data)?.display_name || "Ο λογαριασμός μου";
+  const [feedback, setFeedback] = useState("");
   const [navOpen, setNavOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -747,13 +756,10 @@ function Dashboard({
             <p>Οι ιδέες και τα ταξίδια σας είναι ιδιωτικά.</p>
           </div>
           <div className="user-row">
-            <span className="avatar">
-              {(session.user.email ?? "Ε").slice(0, 1).toUpperCase()}
-            </span>
-            <div>
-              <strong>Ο λογαριασμός σου</strong>
-              <span title={session.user.email}>{session.user.email}</span>
-            </div>
+            <button className="user-account-button" aria-label="Ο λογαριασμός μου" onClick={() => { setAccountOpen(true); setNavOpen(false); }}>
+              <span className="avatar">{accountName === "Ο λογαριασμός μου" ? <UserRound size={18}/> : Array.from(accountName)[0]?.toUpperCase()}</span>
+              <span className="user-account-copy"><strong>{accountName}</strong><small>Όνομα & ρυθμίσεις</small></span>
+            </button>
             <button
               className="icon-button"
               disabled={busy}
@@ -793,11 +799,13 @@ function Dashboard({
               )}
             </span>
           </div>
-          <span className="private-label">
-            <LockKeyhole size={13} /> Ιδιωτικός χώρος
-          </span>
+          <div className="topbar-actions">
+            <button className="button secondary compact" onClick={() => setAccountOpen(true)} aria-label="Ρυθμίσεις λογαριασμού"><UserRound size={16}/><span>Ο λογαριασμός μου</span></button>
+            <span className="private-label"><LockKeyhole size={13} /> Ιδιωτικός χώρος</span>
+          </div>
         </header>
         <div className="content-wrap">
+          {feedback && <Notice success>{feedback} <button className="text-button" onClick={() => setFeedback("")} aria-label="Κλείσιμο επιβεβαίωσης">Κλείσιμο</button></Notice>}
           {error && <Notice>{error}</Notice>}
           {invite && (
             <section className="invite-banner" ref={inviteBanner}>
@@ -842,6 +850,7 @@ function Dashboard({
               key={selected.id}
               group={selected}
               userId={session.user.id}
+              onRenamed={() => { setFeedback("Το όνομα της παρέας αποθηκεύτηκε."); refresh(); }}
               onBack={() => selectGroup("")}
               onAccessLost={() => {
                 selectGroup("");
@@ -959,6 +968,11 @@ function Dashboard({
           <span>Φτιαγμένο για όσα θα θυμάστε μαζί.</span>
         </footer>
       </main>
+      {accountOpen && <AccountModal email={session.user.email ?? ""} onClose={() => setAccountOpen(false)} onSaved={(profile) => {
+        setProfileOverride(profile); setAccountOpen(false);
+        setFeedback("Το εμφανιζόμενο όνομά σου αποθηκεύτηκε. Οι παρέες με ξεχωριστό ψευδώνυμο το διατηρούν.");
+        refresh();
+      }}/>}
       {createOpen && (
         <CreateGroupModal
           onClose={() => setCreateOpen(false)}
@@ -1145,22 +1159,20 @@ function TripCreateModal({
 }
 
 function GroupWorkspace({
-  group,
-  userId,
-  onBack,
-  onAccessLost,
+  group, userId, onBack, onAccessLost, onRenamed,
 }: {
   group: api.Group;
   userId: string;
   onBack: () => void;
   onAccessLost: () => void;
+  onRenamed: () => void;
 }) {
   const [revision, setRevision] = useState(0);
   const [tripId, setTripId] = useState(
     () => new URLSearchParams(location.search).get("trip") ?? "",
   );
   const [tab, setTab] = useState<"trips" | "members">("trips");
-  const [modal, setModal] = useState<"create" | "import" | "invite" | null>(
+  const [modal, setModal] = useState<"create" | "import" | "invite" | "rename" | null>(
     null,
   );
   const [error, setError] = useState("");
@@ -1228,7 +1240,7 @@ function GroupWorkspace({
       <div className="page-heading">
         <div>
           <span className="eyebrow">Ο ΔΙΚΟΣ ΣΑΣ ΚΟΙΝΟΣ ΧΩΡΟΣ</span>
-          <h1>{group.name}</h1>
+          <div className="editable-group-name"><h1>{group.name}</h1>{isAdmin && <button className="icon-button" aria-label="Μετονομασία παρέας" title="Μετονομασία παρέας" onClick={() => setModal("rename")}><Pencil size={18}/></button>}</div>
           <p>
             <Users size={16} /> {members.length}{" "}
             {members.length === 1 ? "μέλος" : "μέλη"}{" "}
@@ -1359,6 +1371,7 @@ function GroupWorkspace({
       {modal === "invite" && (
         <InviteModal groupId={group.id} onClose={() => setModal(null)} />
       )}
+      {modal === "rename" && <RenameGroupModal group={group} onClose={() => setModal(null)} onSaved={() => { setModal(null); onRenamed(); }}/>}
     </>
   );
 }
@@ -1382,7 +1395,10 @@ function Members({
   const [busy, setBusy] = useState(false);
   const myRole = members.find((m) => m.user_id === userId)?.role;
   const [displayName, setDisplayName] = useState(
-    () => members.find((m) => m.user_id === userId)?.display_name ?? "",
+    () => {
+      const me = members.find((m) => m.user_id === userId);
+      return me && Object.hasOwn(me, "nickname") ? (me.nickname ?? "") : (me?.display_name ?? "");
+    },
   );
   async function saveName(e: FormEvent) {
     e.preventDefault();
@@ -1469,6 +1485,7 @@ function Members({
           Αποθήκευση ονόματος
         </button>
       </form>
+      <p className="field-help">Προαιρετικό ψευδώνυμο μόνο για αυτή την παρέα. Άφησέ το κενό και πάτα «Αποθήκευση ονόματος» για να χρησιμοποιείται το όνομα από τον λογαριασμό σου.</p>
       <p className="privacy-inline">
         <ShieldCheck size={16} /> Τα email των άλλων μελών δεν εμφανίζονται.
       </p>
@@ -1777,6 +1794,9 @@ function TripWorkspace({
   const [collaborationRevision, setCollaborationRevision] = useState(0);
   const [query, setQuery] = useState("");
   const [stopFilter, setStopFilter] = useState("");
+  const [kindFilter, setKindFilter] = useState("");
+  const catalogRef = useRef<HTMLHeadingElement>(null);
+  const focusIdeas = useRef(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [editStop, setEditStop] = useState<api.Stop | "new" | null>(null);
@@ -1831,13 +1851,27 @@ function TripWorkspace({
     );
   const stops = data?.stops ?? [];
   const allItems = data?.[tab] ?? [];
-  const items = allItems.filter(
-    (item) =>
-      (!stopFilter || item.stop_id === stopFilter) &&
-      `${item.title} ${item.description ?? ""} ${item.why_visit ?? ""} ${getItemPresentation(item.details).location} ${getItemPresentation(item.details).category}`
-        .toLocaleLowerCase()
-        .includes(query.toLocaleLowerCase()),
-  );
+  const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("el-GR").replaceAll("ς", "σ");
+  const items = allItems.filter((item) => {
+    const presentation = getItemPresentation(item.details);
+    return (!stopFilter || (stopFilter === "__unassigned__" ? !item.stop_id : item.stop_id === stopFilter))
+      && (!kindFilter || tab !== "activities" || presentation.kind === kindFilter)
+      && normalizeSearch(`${item.title} ${item.description ?? ""} ${item.why_visit ?? ""} ${presentation.location} ${presentation.category}`).includes(normalizeSearch(query));
+  });
+  function selectRouteStop(id: string) {
+    setStopFilter(view === "ideas" && tab === "activities" && stopFilter === id ? "" : id);
+    setView("ideas"); setTab("activities"); setQuery(""); setKindFilter(""); focusIdeas.current = true;
+  }
+  useEffect(() => {
+    if (state.data && stopFilter && stopFilter !== "__unassigned__" && !stops.some((stop) => stop.id === stopFilter)) setStopFilter("");
+  }, [state.data, stopFilter]);
+  useEffect(() => {
+    if (view === "ideas" && focusIdeas.current && !state.loading) {
+      focusIdeas.current = false;
+      catalogRef.current?.focus({ preventScroll: true });
+      catalogRef.current?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    }
+  }, [view, stopFilter, tab, state.loading]);
   const status =
     data?.participants.find((p) => p.user_id === userId)?.status ?? "undecided";
   const going =
@@ -1968,7 +2002,7 @@ function TripWorkspace({
                   <h2>
                     <Route size={19} /> Η διαδρομή μας
                   </h2>
-                  <p>Οι στάσεις που θα γεμίσουν αναμνήσεις.</p>
+                  <p>Πάτησε μια στάση για να δεις τις ιδέες της από κάτω. Πάτησέ την ξανά για όλες.</p>
                 </div>
                 {isAdmin && (
                   <button
@@ -1982,7 +2016,8 @@ function TripWorkspace({
               {stops.length ? (
                 <div className="stops-row">
                   {stops.map((stop, index) => (
-                    <div className="stop-card" key={stop.id}>
+                    <div className={`stop-card ${view === "ideas" && stopFilter === stop.id ? "selected-stop" : ""}`} key={stop.id}>
+                      <button type="button" className="stop-select" aria-label={`Ιδέες για ${stop.name}`} aria-pressed={view === "ideas" && stopFilter === stop.id} onClick={() => selectRouteStop(stop.id)}>
                       <div className="stop-top">
                         <span className="stop-number">
                           {String(index + 1).padStart(2, "0")}
@@ -1997,6 +2032,8 @@ function TripWorkspace({
                         }{" "}
                         προτάσεις
                       </p>
+                      <span className="stop-filter-hint">{view === "ideas" && stopFilter === stop.id ? "Επιλεγμένη στάση ✓" : "Δες ιδέες →"}</span>
+                      </button>
                       {isAdmin && (
                         <div className="stop-actions">
                           <button
@@ -2104,6 +2141,7 @@ function TripWorkspace({
             )}
             {view === "ideas" && (
               <>
+                <h2 className="ideas-heading" ref={catalogRef} tabIndex={-1}>Ιδέες για το ταξίδι</h2>
                 <div className="tabs content-tabs">
                   {(["activities", "lodgings", "transfers"] as const).map(
                     (key) => (
@@ -2113,7 +2151,7 @@ function TripWorkspace({
                         onClick={() => {
                           setTab(key);
                           setQuery("");
-                          setStopFilter("");
+                          setKindFilter("");
                         }}
                       >
                         {key === "activities" ? (
@@ -2145,12 +2183,16 @@ function TripWorkspace({
                     onChange={(e) => setStopFilter(e.target.value)}
                   >
                     <option value="">Όλες οι στάσεις</option>
+                    <option value="__unassigned__">Χωρίς στάση</option>
                     {stops.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
                       </option>
                     ))}
                   </select>
+                  {tab === "activities" && <select className="kind-filter" aria-label="Φίλτρο είδους ιδέας" value={kindFilter} onChange={(e) => setKindFilter(e.target.value)}>
+                    <option value="">Όλα τα είδη</option><option value="activity">Δραστηριότητες</option><option value="place">Μέρη / τοποθεσίες</option><option value="food">Φαγητό / ποτό</option>
+                  </select>}
                   {(isAdmin || tab === "activities") && (
                     <button
                       className="button primary compact"
@@ -2159,6 +2201,10 @@ function TripWorkspace({
                       <Plus size={16} /> Νέα {ITEM_SINGULAR[tab]}
                     </button>
                   )}
+                </div>
+                <div className="filter-summary">
+                  <p role="status">{items.length} από {allItems.length} καταχωρίσεις{stopFilter ? ` · ${stopFilter === "__unassigned__" ? "Χωρίς στάση" : stops.find((stop) => stop.id === stopFilter)?.name ?? ""}` : ""}</p>
+                  {(stopFilter || query || kindFilter) && <button className="text-button" type="button" onClick={() => { setStopFilter(""); setQuery(""); setKindFilter(""); }}><X size={14}/> Καθαρισμός φίλτρων</button>}
                 </div>
                 {items.length ? (
                   <div className="idea-grid">
@@ -2202,6 +2248,7 @@ function TripWorkspace({
                                 <span>{item.why_visit}</span>
                               </div>
                             )}
+                            <MoneyDisplay details={item.details ?? {}} currency={data.trip.currency} compact />
                             <span className="details-link">
                               Δες λεπτομέρειες <ArrowRight size={14} />
                             </span>
@@ -2276,6 +2323,7 @@ function TripWorkspace({
           table={tab}
           tripId={trip.id}
           item={editItem === "new" ? undefined : editItem}
+          defaultStopId={stopFilter === "__unassigned__" ? "" : stopFilter}
           stops={stops}
           currency={trip.currency}
           onClose={() => setEditItem(null)}
@@ -2438,6 +2486,7 @@ function ItemModal({
   table,
   tripId,
   item,
+  defaultStopId = "",
   stops,
   currency,
   onClose,
@@ -2446,6 +2495,7 @@ function ItemModal({
   table: api.ItemTable;
   tripId: string;
   item?: api.Item;
+  defaultStopId?: string;
   stops: api.Stop[];
   currency: string;
   onClose: () => void;
@@ -2454,7 +2504,9 @@ function ItemModal({
   const [title, setTitle] = useState(item?.title ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [why, setWhy] = useState(item?.why_visit ?? "");
-  const [stopId, setStopId] = useState(item?.stop_id ?? "");
+  const [stopId, setStopId] = useState(item ? (item.stop_id ?? "") : defaultStopId);
+  const [money, setMoney] = useState(() => toCostDraft(item?.details, currency));
+  const [moneyDirty, setMoneyDirty] = useState(false);
   const [presentation, setPresentation] = useState(() =>
     getItemPresentation(item?.details, currency),
   );
@@ -2470,7 +2522,7 @@ function ItemModal({
         title: title.trim(),
         description,
         stop_id: stopId || null,
-        details: saveItemPresentation(item?.details ?? {}, presentation),
+        details: { ...saveItemPresentation(item?.details ?? {}, presentation), ...(moneyDirty ? { money: saveCostDraft(money) } : {}) },
         ...(table === "activities" ? { why_visit: why } : {}),
       };
       const fingerprint = JSON.stringify(fields);
@@ -2536,10 +2588,12 @@ function ItemModal({
             />
           </label>
         )}
+        <MoneyFields value={money} onChange={(value) => { setMoney(value); setMoneyDirty(true); }}/>
         <ItemDetailFields
           values={presentation}
           onChange={setPresentation}
           activity={table === "activities"}
+          structuredMoney={moneyDirty || Object.hasOwn(item?.details ?? {}, "money")}
         />
         <div className="modal-actions">
           <button
@@ -2601,4 +2655,58 @@ function Metadata({
       </a>
     );
   return <span>{text}</span>;
+}
+
+function AccountModal({ email, onClose, onSaved }: { email: string; onClose: () => void; onSaved: (profile: api.Profile) => void }) {
+  const [revision, setRevision] = useState(0);
+  const state = useAsyncData((signal) => api.getMyProfile(signal), [revision]);
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => { if (state.data) setName(state.data.display_name); }, [state.data]);
+  async function save(event: FormEvent) {
+    event.preventDefault(); if (!state.data) return;
+    setBusy(true); setError("");
+    try { onSaved(await api.updateMyProfile(name.trim(), state.data.version)); }
+    catch (err) { setError(explainError(err)); }
+    finally { setBusy(false); }
+  }
+  return <Modal title="Ο λογαριασμός μου" onClose={onClose} busy={busy}>
+    <p className="field-help">Το εμφανιζόμενο όνομά σου ισχύει σε όλες τις παρέες. Δεν αλλάζει το email σύνδεσης και δεν χρειάζεται να είναι μοναδικό.</p>
+    {state.loading ? <Loading text="Φόρτωση λογαριασμού…"/> : state.error ? <><Notice>{state.error}</Notice><button className="button secondary" onClick={() => setRevision((v) => v + 1)}>Δοκίμασε ξανά</button></> : <form onSubmit={save}>
+      <label>Εμφανιζόμενο όνομα<input autoFocus required minLength={1} maxLength={80} value={name} onChange={(e) => setName(e.target.value)} placeholder="Πώς θέλεις να σε βλέπουν;" disabled={busy}/></label>
+      <p className="account-email">Email σύνδεσης: <strong>{email}</strong></p>
+      <p className="field-help">Ξεχωριστό όνομα για μία παρέα: άνοιξε «Μέλη» και συμπλήρωσε το προαιρετικό ψευδώνυμο. Τα παλιά ψευδώνυμα διατηρούνται. Για να ισχύσει το όνομα λογαριασμού και εκεί, καθάρισε το ψευδώνυμο και αποθήκευσέ το.</p>
+      {error && <Notice>{error}</Notice>}
+      {error && <button type="button" className="text-button" disabled={busy} onClick={() => { setError(""); setRevision((v) => v + 1); }}>Φόρτωση τελευταίου αποθηκευμένου ονόματος</button>}
+      <div className="modal-actions"><button type="button" className="button secondary" onClick={onClose} disabled={busy}>Ακύρωση</button><button className="button primary" disabled={busy || !name.trim()}>{busy && <LoaderCircle className="spin" size={16}/>} Αποθήκευση λογαριασμού</button></div>
+    </form>}
+  </Modal>;
+}
+function RenameGroupModal({ group, onClose, onSaved }: { group: api.Group; onClose: () => void; onSaved: () => void }) {
+  const [name, setName] = useState(group.name);
+  const [currentGroup, setCurrentGroup] = useState(group);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function save(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError("");
+    try { await api.renameGroup(currentGroup, name.trim()); onSaved(); }
+    catch (err) { setError(explainError(err)); }
+    finally { setBusy(false); }
+  }
+  async function reloadName() {
+    setBusy(true);
+    try {
+      const latest = (await api.getGroups()).find((entry) => entry.id === group.id);
+      if (!latest) throw new Error("Η παρέα δεν είναι πλέον διαθέσιμη.");
+      setCurrentGroup(latest); setName(latest.name); setError("");
+    } catch (err) { setError(explainError(err)); }
+    finally { setBusy(false); }
+  }
+  return <Modal title="Μετονομασία παρέας" onClose={onClose} busy={busy}>
+    <p className="field-help">Αλλάζει μόνο η ονομασία. Μέλη, ταξίδια, ψήφοι και σύνδεσμοι προσκλήσεων παραμένουν όπως είναι.</p>
+    {error && <><Notice>{error}</Notice><button type="button" className="text-button" disabled={busy} onClick={() => void reloadName()}>Φόρτωση τελευταίας ονομασίας</button></>}
+    <form onSubmit={save}><label>Όνομα παρέας<input autoFocus required maxLength={120} value={name} onChange={(e) => setName(e.target.value)} disabled={busy}/></label>
+    <div className="modal-actions"><button className="button secondary" type="button" onClick={onClose} disabled={busy}>Ακύρωση</button><button className="button primary" disabled={busy || !name.trim()}>Αποθήκευση ονόματος παρέας</button></div></form>
+  </Modal>;
 }

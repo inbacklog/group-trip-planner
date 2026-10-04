@@ -1,12 +1,13 @@
 import { requireClient } from "./supabase";
 import type { PrivateTripImport } from "./privateImport";
 
-export type Group = { id: string; name: string; created_by: string };
+export type Group = { id: string; name: string; created_by: string; version?: number };
 export type Member = {
   group_id: string;
   user_id: string;
   role: string;
   display_name?: string;
+  nickname?: string | null;
 };
 export type Trip = {
   id: string;
@@ -58,7 +59,7 @@ async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
 export async function getGroups(signal?: AbortSignal): Promise<Group[]> {
   let q = requireClient()
     .from("groups")
-    .select("id,name,created_by")
+    .select("id,name,created_by,version")
     .order("created_at");
   if (signal) q = q.abortSignal(signal);
   return unwrap(await q) ?? [];
@@ -72,7 +73,7 @@ export async function getGroupData(groupId: string, signal?: AbortSignal) {
     .order("created_at");
   let members = db
     .from("group_members")
-    .select("group_id,user_id,role,display_name")
+    .select("group_id,user_id,role,display_name,nickname")
     .eq("group_id", groupId);
   if (signal) {
     trips = trips.abortSignal(signal);
@@ -278,3 +279,15 @@ export async function deleteItem(table: ItemTable, item: Item) {
       "Η καταχώριση άλλαξε ή δεν είναι πλέον διαθέσιμη. Ανανέωσε τη σελίδα.",
     );
 }
+
+export type Profile = { display_name: string; version: number };
+export async function getMyProfile(signal?: AbortSignal): Promise<Profile> {
+  let q = requireClient().rpc("get_my_profile");
+  if (signal) q = q.abortSignal(signal);
+  const data = unwrap(await q);
+  return data ?? { display_name: "", version: 0 };
+}
+export const updateMyProfile = (name: string, version: number) =>
+  rpc<Profile>("update_my_profile", { p_display_name: name, p_expected_version: version });
+export const renameGroup = (group: Group, name: string) =>
+  rpc<Group>("rename_group", { p_group_id: group.id, p_name: name, p_expected_version: group.version ?? 1 });

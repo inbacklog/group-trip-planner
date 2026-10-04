@@ -1,0 +1,176 @@
+{
+  "format": "project-china-update-manifest",
+  "version": 3,
+  "created_date": "2026-10-04",
+  "basis": "user-supplied project-china.zip",
+  "mode": "overlay changed/new files only; do not delete unrelated files",
+  "required_existing_migrations": [
+    "202610040001_private_groups.sql",
+    "202610040002_collaboration.sql"
+  ],
+  "apply_to_existing_database_only": "supabase/migrations/202610040003_profiles_group_names.sql",
+  "no_live_changes_performed": true,
+  "files": [
+    {
+      "path": "CODEX_CONTINUE_V3.txt",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "e46b996976506faefd438faddda992fe03d4360b12880e3f2e4ab1673e540dd2",
+      "bytes": 5542
+    },
+    {
+      "path": "UPGRADE_V3_EL.md",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "43cef21ee608f091eb5126f0501ab33b869c87fa4934398b4e3c20817b774fb8",
+      "bytes": 13508
+    },
+    {
+      "path": "docs/UPGRADE_V3_TEST_REPORT.md",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "d192dc0cf32d73d353fd4b13c08102dfbed915b355c7771530a6e52fe2f5b7e3",
+      "bytes": 5748
+    },
+    {
+      "path": "package.json",
+      "action": "replace",
+      "baseline_sha256": "7bac15f6f844eeb728977c3d04b41b421445e6ec03801e30eaf51ec1cb532e31",
+      "updated_sha256": "de018f9bb8bebd6d39bb6b12f1b66aa28b99a9a1866490b3fe3db0e3b80d1e83",
+      "bytes": 1136
+    },
+    {
+      "path": "public/privacy.html",
+      "action": "replace",
+      "baseline_sha256": "297c49a78269bfb0ff71f9effd573d4aa688fe50c17f998cc471ad9820162f9a",
+      "updated_sha256": "bce185111e6222f04a8364c761d8cef8dd5ce34ce5147714355c08fca7e5a483",
+      "bytes": 23736
+    },
+    {
+      "path": "scripts/build-install-sql.mjs",
+      "action": "replace",
+      "baseline_sha256": "e88e008fc2ec138c39fdce697fef920c646867d383157f8a442f61d8d049fd0d",
+      "updated_sha256": "c7bad04d76b8641792f12f480fa6780243cc544ac6cb40118aba77b2f923b4e6",
+      "bytes": 2565
+    },
+    {
+      "path": "src/App.tsx",
+      "action": "replace",
+      "baseline_sha256": "f79a6cfb4d1be13fecc4361580d0172546d129799d88e4753b53a899aa78b2a5",
+      "updated_sha256": "e0a9246c8f9f4ba5fa15e4ebd89f5eab906238dc101a888de272a5a55bc78dfa",
+      "bytes": 97424
+    },
+    {
+      "path": "src/components/ItemInformation.tsx",
+      "action": "replace",
+      "baseline_sha256": "1dd5688faa4fd004ee6959e3e9f366e64eebf845cc32f21ffc4129739926110e",
+      "updated_sha256": "e815ce806f9090859371e3d9766cb1dff003f83c7dc19d4f3516ae2057800a06",
+      "bytes": 6058
+    },
+    {
+      "path": "src/components/MoneyDisplay.tsx",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "74e0e66ebd64c155c672d0824fdee711c8c2f5e0eb8c110b180fe1b55e5b38c2",
+      "bytes": 4291
+    },
+    {
+      "path": "src/components/TripPlanner.tsx",
+      "action": "replace",
+      "baseline_sha256": "6ef1e0879eab29e1a982bd1ce6af8f3459f266915cdb7001b726a00b9d45f30a",
+      "updated_sha256": "d14a1bc2f505e032e6f299d26a354f4416acfbe03e80ee2eb28acc8f702a8674",
+      "bytes": 48107
+    },
+    {
+      "path": "src/components/upgrades.css",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "aa1f4b72eba05b3c1dd32aa07ecc1edadfb2dbea96f6d38dc80b1e6c34ead18d",
+      "bytes": 3382
+    },
+    {
+      "path": "src/lib/api.ts",
+      "action": "replace",
+      "baseline_sha256": "e8d8a640a5823d28919d2940db8a58c9a5ec1550f0ce881690275fe39c5b804e",
+      "updated_sha256": "9e181d5c2c0668449f2821da724a50f06144318c4d31ab8878ea9470fc92d956",
+      "bytes": 8588
+    },
+    {
+      "path": "src/lib/fx.ts",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "8493febd31387d98c61ac07ca1f1f065181be3492855b04975c92080c6f60203",
+      "bytes": 3775
+    },
+    {
+      "path": "src/lib/money.ts",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "e4b85aa4214970162663bda2f3892126ea0eb1e2550798c87f3d84720f2898fe",
+      "bytes": 7169
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "action": "replace",
+      "baseline_sha256": "27ed68143a7622fe188991742fb53b525bb3d0ec68bfbaaeba18026e066d795f",
+      "updated_sha256": "013e50eb24fdb6282b2400999f0b6b87dc3cf51dada3a998feb9ea5c7500e8a5",
+      "bytes": 3788
+    },
+    {
+      "path": "supabase/INSTALL_ALL.sql",
+      "action": "replace",
+      "baseline_sha256": "6893160fd3ef59dfd9c2c4868b4df70d956dd4ecd337b829e7e8aa930a9d6955",
+      "updated_sha256": "fb95f46e0058f677f57079c3d57fd30725ea2a91443f897f90169fc2e8c87d89",
+      "bytes": 66911
+    },
+    {
+      "path": "supabase/VERIFY_UPGRADE_V3.sql",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "66435fe2da3e03dc534390cd190297cf5a4058df594dbce283789d2b3efb2581",
+      "bytes": 846
+    },
+    {
+      "path": "supabase/migrations/202610040003_profiles_group_names.sql",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "6f67807d07c615c940d3d3d42ced5f805194398952512350ffc25d293a0b3736",
+      "bytes": 6580
+    },
+    {
+      "path": "tests/browser/fixture.ts",
+      "action": "replace",
+      "baseline_sha256": "4e6c189a5a9feb247201d0a72882401e44dd1b427554c0c770a8637899d6145c",
+      "updated_sha256": "72fa7165a4166fdcb6f5d97e99d2ebfb317eb41f9be995000614e00b6bfbe193",
+      "bytes": 9618
+    },
+    {
+      "path": "tests/browser/upgrades-v3.spec.ts",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "548c2fc8473fd20b88ccc3cc2903d07ab1f59cc34f6b597db421345b1e776137",
+      "bytes": 8166
+    },
+    {
+      "path": "tests/install-bundle.test.mjs",
+      "action": "replace",
+      "baseline_sha256": "1b65cc8c3b755fffd05a4b51d7fe00bc1c45e6fccd763ce113506d89576fd934",
+      "updated_sha256": "0543b1c1a292cb31e6b1f1578d039c61637bea25c05f1cbbcde1b04ece9d671f",
+      "bytes": 3106
+    },
+    {
+      "path": "tests/money.test.mjs",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "e3d3201858ee15c8430d290398cd4402e62baf57c5b0e29fcc09b24a5ee14b7f",
+      "bytes": 3091
+    },
+    {
+      "path": "tests/profiles-database.test.mjs",
+      "action": "add",
+      "baseline_sha256": null,
+      "updated_sha256": "9ae6dd281b19cac39dad9731adbe2b85102f4d4b765c68d1629d9d48c34c0047",
+      "bytes": 7612
+    }
+  ]
+}

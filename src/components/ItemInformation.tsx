@@ -9,15 +9,18 @@ import {
 } from "../lib/itemDetails";
 import { safeExternalUrl } from "../lib/privateImport";
 import "./item-information.css";
+import { MoneyDisplay } from "./MoneyDisplay";
 
 export function ItemDetailFields({
   values,
   onChange,
   activity,
+  structuredMoney = false,
 }: {
   values: ItemPresentation;
   onChange: (value: ItemPresentation) => void;
   activity: boolean;
+  structuredMoney?: boolean;
 }) {
   return (
     <>
@@ -42,7 +45,7 @@ export function ItemDetailFields({
       <div className="detail-fields">
         {DETAIL_FIELDS.map(([key, label, max]) => (
           <label key={key} className={max >= 2000 ? "full-field" : undefined}>
-            {label}
+            {key === "estimated_cost" && structuredMoney ? "Περιγραφή κόστους / σημειώσεις" : label}
             {max >= 3000 ? (
               <textarea
                 rows={2}
@@ -118,6 +121,7 @@ export function ItemInformation({
   );
   return (
     <div className="item-information">
+      <MoneyDisplay details={details} currency={currency}/>
       {image && (
         <ItemPhoto
           key={image}
@@ -153,7 +157,7 @@ export function ItemInformation({
         <dl className="item-facts">
           {facts.map(([key, label]) => (
             <div key={key}>
-              <dt>{label}</dt>
+              <dt>{key === "estimated_cost" && Object.hasOwn(details, "money") ? "Περιγραφή κόστους / σημειώσεις — δεν χρησιμοποιείται στη μετατροπή" : label}</dt>
               <dd>{values[key]}</dd>
             </div>
           ))}

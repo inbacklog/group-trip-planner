@@ -37,6 +37,7 @@ test("single install artifact matches migrations and installs the complete app a
       )
     ).rows.map((r) => r.tablename);
     for (const table of [
+      "profiles",
       "groups",
       "activity_comments",
       "activity_preferences",

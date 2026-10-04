@@ -21,6 +21,9 @@ import type { Item, Member, Participant, Stop, Trip } from "../lib/api";
 import * as plannerApi from "../lib/collaborationApi";
 import { explainError } from "../lib/supabase";
 import { getItemPresentation, getItemSources } from "../lib/itemDetails";
+import { MoneyDisplay } from "./MoneyDisplay";
+import { COST_UNITS, formatCost, getCost, FX_SOURCE_NAME } from "../lib/money";
+import { cachedRate } from "../lib/fx";
 import "./trip-planner.css";
 
 type Props = {
@@ -485,12 +488,15 @@ export function TripPlanner({
                 const sources = activity
                   ? getItemSources(activity.details)
                   : [];
-                return `<li><h3>${escapeHtml(item.title)}</h3><p class="muted">${[item.time_slot, item.duration_minutes === null ? "" : `${item.duration_minutes} λεπτά`, item.is_alternative ? "Εναλλακτική" : "", item.subgroup ? `Υποομάδα: ${item.subgroup}` : ""].filter(Boolean).map(escapeHtml).join(" · ")}</p>${item.notes ? `<p>${escapeHtml(item.notes)}</p>` : ""}${activity?.description ? `<p>${escapeHtml(activity.description)}</p>` : ""}${activity?.why_visit ? `<p><strong>Γιατί αξίζει:</strong> ${escapeHtml(activity.why_visit)}</p>` : ""}${
+                const cost = activity ? getCost(activity.details, data.trip.currency) : null;
+                const rate = cost && cost.currency !== "EUR" ? cachedRate(cost.currency) : undefined;
+                const moneyText = cost ? `${formatCost(cost)} · ${COST_UNITS[cost.unit]}${rate ? ` · ≈ ${formatCost(cost, rate.rate, "EUR")} (${FX_SOURCE_NAME}, ${rate.date}, αποθηκευμένη κατά την εξαγωγή)` : cost.currency !== "EUR" ? " · μετατροπή EUR μη διαθέσιμη" : ""}` : "Κόστος: μη καταγεγραμμένο αριθμητικά";
+                return `<li><p>${escapeHtml(moneyText)}</p><h3>${escapeHtml(item.title)}</h3><p class="muted">${[item.time_slot, item.duration_minutes === null ? "" : `${item.duration_minutes} λεπτά`, item.is_alternative ? "Εναλλακτική" : "", item.subgroup ? `Υποομάδα: ${item.subgroup}` : ""].filter(Boolean).map(escapeHtml).join(" · ")}</p>${item.notes ? `<p>${escapeHtml(item.notes)}</p>` : ""}${activity?.description ? `<p>${escapeHtml(activity.description)}</p>` : ""}${activity?.why_visit ? `<p><strong>Γιατί αξίζει:</strong> ${escapeHtml(activity.why_visit)}</p>` : ""}${
                   presentation
                     ? `<dl>${[
                         ["Τοποθεσία", presentation.location],
                         ["Διάρκεια", presentation.duration],
-                        ["Ενδεικτικό κόστος", presentation.estimated_cost],
+                        [activity && Object.hasOwn(activity.details, "money") ? "Περιγραφή κόστους / σημειώσεις (όχι ποσό μετατροπής)" : "Ενδεικτικό κόστος", presentation.estimated_cost],
                         ["Κράτηση", presentation.booking],
                         ["Μετακίνηση", presentation.transport],
                         ["Χρήσιμα", presentation.tips],
@@ -1043,6 +1049,7 @@ export function TripPlanner({
                                   Από τις προτάσεις της παρέας
                                 </p>
                               )}
+                              {activities.find((activity) => activity.id === item.activity_id) && <MoneyDisplay compact currency={data.trip.currency} details={activities.find((activity) => activity.id === item.activity_id)!.details}/>}
                               {item.notes && <p>{item.notes}</p>}
                             </div>
                             {isAdmin && (

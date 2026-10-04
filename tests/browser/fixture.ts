@@ -16,6 +16,7 @@ export const user = {
 export const group = {
   id: GROUP_ID,
   name: "Συνθετική παρέα",
+  version: 1,
   created_by: USER_ID,
   created_at: "2026-01-01T00:00:00Z",
 };
@@ -49,6 +50,8 @@ export async function installFixture(
     stops: [] as Record<string, unknown>[],
     activities: [] as Record<string, unknown>[],
     displayName: "",
+    nickname: null as string | null,
+    profile: { display_name: "", version: 0 },
     mutations: [] as { path: string; body: Record<string, unknown> }[],
   };
   const expires = Math.floor(Date.now() / 1000) + 3600;
@@ -77,6 +80,10 @@ export async function installFixture(
       );
     }, session);
   }
+  // Synthetic FX response: not a real exchange-rate observation.
+  await page.route("https://api.frankfurter.dev/**", (route) => route.fulfill({
+    contentType: "application/json", body: JSON.stringify({ base: new URL(route.request().url()).pathname.split("/").at(-2)?.toUpperCase(), quote: "EUR", rate: 0.125, date: new Date().toISOString().slice(0, 10) }),
+  }));
   await page.route("**/*.supabase.co/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -144,14 +151,28 @@ export async function installFixture(
       });
       return respond(id);
     }
+    if (path.endsWith("/rpc/get_my_profile")) return respond(state.profile);
+    if (path.endsWith("/rpc/update_my_profile")) {
+      if (body.p_expected_version !== state.profile.version) return respond({ code: "40001", message: "Profile changed" }, 409);
+      state.profile = { display_name: String(body.p_display_name).trim(), version: state.profile.version + 1 };
+      if (state.nickname === null) state.displayName = state.profile.display_name;
+      return respond(state.profile);
+    }
+    if (path.endsWith("/rpc/rename_group")) {
+      if (options.memberRole === "member") return respond({ code: "42501", message: "Denied" }, 403);
+      if (body.p_expected_version !== state.groups[0]?.version) return respond({ code: "40001", message: "Group changed" }, 409);
+      state.groups[0] = { ...state.groups[0], name: String(body.p_name), version: state.groups[0].version + 1 };
+      return respond(state.groups[0]);
+    }
     if (path.endsWith("/rpc/set_member_display_name")) {
-      state.displayName = String(body.p_display_name);
+      state.nickname = String(body.p_display_name).trim() || null;
+      state.displayName = state.nickname ?? state.profile.display_name;
       return respond(null);
     }
     if (path.endsWith("/rpc/get_activity_collaboration") || path.endsWith("/rpc/get_preference_snapshot") || path.endsWith("/rpc/get_plan_snapshot")) {
       const current = state.trips[0];
       if (!current || (body.p_activity_id && !state.activities.some((activity) => activity.id === body.p_activity_id))) return respond(null);
-      return respond({ trip: current, preferences: [], comments: [], days: [], items: [], approvals: [], activities: state.activities, stops: state.stops, members: [{ group_id: GROUP_ID, user_id: USER_ID, role: options.memberRole ?? "owner", display_name: state.displayName }], participants: [{ trip_id: TRIP_ID, user_id: USER_ID, status: "going" }] });
+      return respond({ trip: current, preferences: [], comments: [], days: [], items: [], approvals: [], activities: state.activities, stops: state.stops, members: [{ group_id: GROUP_ID, user_id: USER_ID, role: options.memberRole ?? "owner", display_name: state.displayName, nickname: state.nickname }], participants: [{ trip_id: TRIP_ID, user_id: USER_ID, status: "going" }] });
     }
     if (path.includes("/rpc/")) return respond(null);
     if (path.endsWith("/groups"))
@@ -166,7 +187,7 @@ export async function installFixture(
                 group_id: GROUP_ID,
                 user_id: USER_ID,
                 role: options.memberRole ?? "owner",
-                display_name: state.displayName,
+                display_name: state.displayName, nickname: state.nickname,
               },
             ]
           : [],

@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 export const migrationFiles = [
   "202610040001_private_groups.sql",
   "202610040002_collaboration.sql",
+  "202610040003_profiles_group_names.sql",
 ];
 export async function buildInstallSql() {
   const bodies = [];
@@ -45,7 +46,7 @@ if (direct) {
       throw new Error(
         "INSTALL_ALL.sql is stale. Run node scripts/build-install-sql.mjs.",
       );
-    console.log("INSTALL_ALL.sql matches both migrations.");
+    console.log("INSTALL_ALL.sql matches all migrations.");
   } else {
     await writeFile(output, generated, "utf8");
     console.log(
