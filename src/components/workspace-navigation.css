@@ -1,0 +1,55 @@
+.workspace-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 7px;
+  background: #eaf0e2;
+  border-radius: 14px;
+  margin: 26px 0;
+}
+.workspace-navigation button {
+  flex: 1;
+  min-width: 135px;
+  border: 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  color: #456346;
+  background: transparent;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+.workspace-navigation button.active {
+  background: #fffefa;
+  color: #214e42;
+  box-shadow: 0 2px 8px #234e4210;
+}
+.workspace-navigation button:focus-visible {
+  outline: 2px solid #214e42;
+  outline-offset: 2px;
+}
+.member-name-form {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 24px 0;
+}
+.member-name-form label {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+}
+.member-name-form input {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .workspace-navigation button {
+    min-width: 90px;
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+  .member-name-form .button {
+    width: 100%;
+  }
+}

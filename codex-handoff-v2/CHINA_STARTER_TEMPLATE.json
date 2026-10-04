@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "trip_template_reference",
+  "template_id": "china-starter-v1",
+  "name_el": "Βασικό πρότυπο Κίνας",
+  "description_el": "Δύο επεξεργάσιμες στάσεις για αρχή. Πρόσθεσε, αφαίρεσε ή άλλαξε τη σειρά τους.",
+  "country_code": "CN",
+  "stops": [
+    {
+      "template_stop_key": "shanghai",
+      "name_el": "Σαγκάη",
+      "name_en": "Shanghai"
+    },
+    {
+      "template_stop_key": "beijing",
+      "name_el": "Πεκίνο",
+      "name_en": "Beijing"
+    }
+  ],
+  "activities": [],
+  "lodgings": [],
+  "transfers": [],
+  "dates": null,
+  "implementation_note": "Declarative reference only. Instantiate private rows with new IDs after explicit trip creation. Never seed on signup/login. Adapt to the implemented schema; this is not the legacy import contract."
+}

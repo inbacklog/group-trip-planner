@@ -1,0 +1,73 @@
+{
+  "package": "Project China Codex handoff v2",
+  "version": "2",
+  "date": "2026-10-04",
+  "scope": "Updated assignment and setup documentation; not implemented application code",
+  "sources": [
+    {
+      "filename": "CODEX_MASTER_PROMPT_EL.md",
+      "sha256": "a58982281ca5af070a16bac70ff20a1c1f2441d839c8ae0fffa3cf93775772fc"
+    },
+    {
+      "filename": "Project_China_Codex_START_HERE.md",
+      "sha256": "0ddb27a1f44f67ce9d97d7fadfaf4eda1ddcf61fea49c5a160d155da226dd422"
+    }
+  ],
+  "files": [
+    {
+      "path": "ACCEPTANCE_ADDITIONS.md",
+      "bytes": 11299,
+      "sha256": "d84003469ffae1b7e34c1a32e8c6367293e566376b788772d10818e5cec67925"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 7551,
+      "sha256": "5ed0df5a74284e73d2119a9a2fa975ace7d0655ea1a43d06e8cba8654ae6a61c"
+    },
+    {
+      "path": "CHINA_STARTER_TEMPLATE.json",
+      "bytes": 885,
+      "sha256": "72863be5fe0f18232259fc29813f03bb2d29ac5df64629cb12aa011efff3276b"
+    },
+    {
+      "path": "CODEX_TASK.md",
+      "bytes": 65634,
+      "sha256": "05d12e63a4263c2b266c62429f60c5aeba3217d96df7615bb3b55c00691c5a0e"
+    },
+    {
+      "path": "PASTE_IN_CODEX.txt",
+      "bytes": 2926,
+      "sha256": "4ccc9ce1da24eb8b4349053846e1a8a8e7cdb02785b075da61cd2662d47644e5"
+    },
+    {
+      "path": "PRODUCT_DECISIONS.md",
+      "bytes": 8648,
+      "sha256": "d547688a82763ff88800d4ec2dde3580968109f9e97246b69a1efa89c99174d3"
+    },
+    {
+      "path": "START_HERE_EL.md",
+      "bytes": 6833,
+      "sha256": "447d6393c4567e7f5767f85aeda3477f2a25ba6e724f93d540ec13f6f9db426a"
+    },
+    {
+      "path": "SUPABASE_SETUP_EL.md",
+      "bytes": 11623,
+      "sha256": "3848ffbf239a0f32334c04ff43ce45ad512e85db1546f4a34e85e0e6aebadc2f"
+    },
+    {
+      "path": "frontend.env.example",
+      "bytes": 439,
+      "sha256": "a54a2127dc6a7d8c011b01e1e861536206a837a69860b338dd3d66914d40b644"
+    }
+  ],
+  "packaging_checks": {
+    "utf8": "pass",
+    "json_syntax": "pass",
+    "master_sections_0_through_18": "pass",
+    "starter_exactly_two_cities": "pass",
+    "empty_private_template_data": "pass",
+    "credential_pattern_scan": "pass",
+    "original_inputs_unchanged": "pass"
+  },
+  "application_tests": "not run; package contains no application implementation"
+}
