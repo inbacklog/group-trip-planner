@@ -1,6 +1,6 @@
 # Κατάσταση εργασίας
 
-Ημερομηνία: 2026-10-04. Η πλήρης τοπική επαλήθευση πέρασε με 52/52 unit/SQL και 66/66 browser tests. Πέρασε hosted SQL verification των 14 πινάκων με δύο συνθετικές ταυτότητες και rollback. Το Google login λειτουργεί στο preview και ολοκληρώθηκε το πραγματικό ιδιωτικό import από τον ιδιοκτήτη. Auth redirects και Pages build variables έχουν αποθηκευτεί. Push, deployment και production Google verification παραμένουν επόμενα βήματα.
+Ημερομηνία: 2026-10-04. Η εφαρμογή και η πολιτική απορρήτου δημοσιεύτηκαν στο GitHub Pages. Ολοκληρώθηκε το ιδιωτικό import του ιδιοκτήτη και πέρασαν production Google login, ανάγνωση ταξιδιού, reload και logout. Πέρασαν 52/52 unit/SQL, 66/66 browser tests και hosted SQL verification των 14 πινάκων με δύο συνθετικές ταυτότητες και rollback. Το Google OAuth app είναι External / In production.
 
 | Ενότητα | Κατάσταση |
 |---|---|
@@ -17,15 +17,15 @@
 | Έγκριση συγκεκριμένης έκδοσης | Υλοποιήθηκε· αλλαγές περιεχομένου/διαδρομής/προγράμματος/συμμετοχής κάνουν παλιές τις εγκρίσεις |
 | Ονόματα μελών και offline εξαγωγή | Προσωπικό όνομα ανά παρέα· JSON snapshot και αυτοτελές HTML για ανάγνωση/εκτύπωση |
 | Ενιαία πρώτη εγκατάσταση | `supabase/INSTALL_ALL.sql`, δύο migrations σε μία συναλλαγή, έλεγχος σύγκρουσης υπάρχοντος schema |
-| Σύνδεση Google | Ρυθμίστηκε στο υπάρχον Google Cloud project· πραγματικό consent/login και reload με έναν λογαριασμό στο τοπικό preview PASS, κενό dashboard με 0 ομάδες και καθαρό callback URL |
-| Google Audience και δημοσίευση | External / Testing, 0 test users· Publish app ανενεργό μέχρι ολοκλήρωση Branding· δεν έγινε νέο project ή billing· homepage/πολιτική απορρήτου και δημόσια διάθεση δεν έχουν επαληθευτεί |
+| Σύνδεση Google | Preview και production **PASS**· στον δημόσιο ιστότοπο ο ιδιοκτήτης είδε το ταξίδι, reload διατήρησε auth/53–13–7 εγγραφές και logout καθάρισε το ιδιωτικό περιεχόμενο |
+| Google Audience και δημοσίευση | **External / In production** επιβεβαιώθηκε· homepage/privacy/domain αποθηκεύτηκαν στο Branding· χωρίς νέο project ή billing |
 | Εφαρμογή migration στο Supabase | Ο χρήστης ανέφερε εκτέλεση `INSTALL_ALL.sql` στις 2026-10-04· read-only Table Editor επιβεβαιώνει και τους 14 αναμενόμενους πίνακες· δεν επανεκτελέστηκε SQL από τον agent |
 | Read-only Supabase probe πριν από τη ρύθμιση Google | Auth settings HTTP 200, Google false/email true τότε· αρχικό endpoint `groups` HTTP 404, μετά την αναφορά εγκατάστασης HTTP 401 σε anonymous αίτημα· οι μεταγενέστεροι SQL έλεγχοι καταγράφονται χωριστά |
 | Πραγματικά Supabase Auth/PostgREST tests με δύο λογαριασμούς | Εκκρεμούν |
 | Auth Site URL και redirect allowlist | Αποθηκεύτηκαν και επαληθεύτηκαν στο dashboard στις 2026-10-04: production Site URL και τέσσερα ακριβή redirects του `DEPLOYMENT.md` |
 | Hosted SQL verification | **PASS** με deployed authenticated/auth.uid/RLS, δύο συνθετικές ταυτότητες και πλήρες rollback· 14 πίνακες, snapshots, author guards, προσκλήσεις και ανάκληση πρόσβασης |
-| Δημόσια πολιτική απορρήτου | `public/privacy.html` και 4/4 desktop/mobile browser tests PASS· δημόσια διαθεσιμότητα και Google Branding URLs δεν έχουν ακόμη επαληθευτεί |
-| GitHub Pages publication | Source GitHub Actions και δύο δημόσια build variables αποθηκεύτηκαν/επιβεβαιώθηκαν· push/deployment εκκρεμούν |
+| Δημόσια πολιτική απορρήτου | `public/privacy.html`, 4/4 desktop/mobile tests PASS και δημόσιο URL επαληθευμένο· Google Branding URLs αποθηκεύτηκαν |
+| GitHub Pages publication | **Δημοσιεύτηκε** στο `https://inbacklog.github.io/group-trip-planner/`· CI και Pages workflows PASS, χωρίς σύνδεση εμφανίζεται μόνο η σελίδα εισόδου |
 | SMTP | Δεν έχει επαληθευτεί |
 | Adapter πραγματικού αρχείου | 8/8 συνθετικά tests PASS· πραγματικό αρχείο: ακριβής ανακατασκευή, SQL import/ανάγνωση και μηδενική πρόσβαση ξένης ταυτότητας PASS |
 | Εισαγωγή πραγματικού ταξιδιού στο Supabase | **Ολοκληρώθηκε** μέσω του app από τον ιδιοκτήτη· UI: 53 δραστηριότητες, 13 διαμονές, 7 μετακινήσεις και 6 στάσεις· τα 53/13/7 διατηρήθηκαν μετά από reload |
@@ -49,8 +49,8 @@
 ## Συγκεκριμένη συνέχεια
 
 1. Το hosted SQL verification ολοκληρώθηκε με PASS και rollback, χωρίς επανεκτέλεση του `INSTALL_ALL.sql`.
-2. Το πραγματικό ιδιωτικό import και η πλήρης τοπική επαλήθευση ολοκληρώθηκαν. Εκκρεμούν push και επιτυχές Pages workflow· τα build variables έχουν επιβεβαιωθεί.
-3. Έλεγχος production app/privacy page και Google login/reload/logout· ολοκλήρωση Google Branding/publishing χωριστά. Η [σειρά δημοσίευσης](DEPLOYMENT.md#σειρά-δημοσίευσης-και-επιβεβαίωσης) ορίζει τα συγκεκριμένα βήματα.
-4. Οι πλήρεις δοκιμές δύο πραγματικών λογαριασμών μέσω Auth/PostgREST, το SMTP και οι ταυτόχρονες αιτήσεις παραμένουν ξεχωριστές εκκρεμότητες.
+2. Το ιδιωτικό import, η πλήρης τοπική επαλήθευση, η δημοσίευση κώδικα και το Pages deployment ολοκληρώθηκαν.
+3. Production app/privacy, Google Branding/publishing και production login/reload/logout επιβεβαιώθηκαν. Η [σειρά δημοσίευσης](DEPLOYMENT.md#σειρά-δημοσίευσης-και-επιβεβαίωσης) καταγράφει τα αποτελέσματα.
+4. Οι πλήρεις δοκιμές δύο ανεξάρτητων Auth JWT/PostgREST συνεδριών, το SMTP, οι ταυτόχρονες αιτήσεις και το πραγματικό invitation OAuth callback παραμένουν ξεχωριστές εκκρεμότητες.
 
-Ο κώδικας παραμένει στο τοπικό branch `codex/private-team-onboarding`. Δεν έγινε push ή deployment. Οι αναφορές handoff παραμένουν ως αρχικό υλικό· δεν αποτελούν περιγραφή ολοκληρωμένων λειτουργιών.
+Ο δημοσιευμένος κώδικας βρίσκεται στο remote `main` (release commit `aa82cd0375c6f0c156a4d7a335936ee854df6274`). Το τοπικό checkout είναι `codex/published-release`, με tracking του `origin/main`· το αρχικό branch διατηρήθηκε. Η δημοσίευση έγινε μέσω του GitHub connector, με επιβεβαιωμένη ταύτιση του tree. Οι αναφορές handoff παραμένουν αρχικό υλικό, όχι περιγραφή ολοκληρωμένων λειτουργιών.

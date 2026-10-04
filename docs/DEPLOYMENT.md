@@ -1,6 +1,8 @@
 # Supabase και δημοσίευση
 
-Στις 2026-10-04 ο χρήστης ανέφερε ότι εκτέλεσε το `INSTALL_ALL.sql` στο Supabase. Επιβεβαιώθηκαν οι 14 πίνακες και πέρασε hosted SQL verification με deployed `authenticated` ρόλο, πραγματικό `auth.uid()` και δύο συνθετικές ταυτότητες μέσω JWT claim settings. Όλα τα συνθετικά δεδομένα έγιναν rollback. Δεν πρόκειται για δύο ανεξάρτητα εκδοθέντα Auth JWT/PostgREST sessions· αυτή η δοκιμή εκκρεμεί. Δεν επανεκτελέστηκε migration και δεν έγινε deployment.
+Η εφαρμογή δημοσιεύτηκε στις 2026-10-04 στο [Group Trip Planner](https://inbacklog.github.io/group-trip-planner/) και η [πολιτική απορρήτου](https://inbacklog.github.io/group-trip-planner/privacy.html) είναι δημόσια διαθέσιμη. Το ιδιωτικό import ολοκληρώθηκε χωριστά στον λογαριασμό του ιδιοκτήτη.
+
+Ο χρήστης εκτέλεσε το `INSTALL_ALL.sql`. Επιβεβαιώθηκαν οι 14 πίνακες και πέρασε hosted SQL verification με deployed `authenticated` ρόλο, πραγματικό `auth.uid()` και δύο συνθετικές ταυτότητες μέσω JWT claim settings. Όλα τα συνθετικά δεδομένα έγιναν rollback. Δεν πρόκειται για δύο ανεξάρτητα εκδοθέντα Auth JWT/PostgREST sessions· αυτή η δοκιμή εκκρεμεί. Δεν επανεκτελέστηκε migration.
 
 Ο αρχικός read-only έλεγχος της 2026-10-04 έδωσε Auth settings HTTP 200 και endpoint `groups` HTTP 404. Μετά την αναφορά εγκατάστασης, ο νέος έλεγχος έδωσε Auth settings HTTP 200 και `groups` HTTP 401 σε anonymous αίτημα. Οι κωδικοί αυτοί δεν αποτελούν πλήρη έλεγχο schema ή απομόνωσης δεδομένων.
 
@@ -31,9 +33,9 @@
 
 ### Σύνδεση με Google
 
-Στις 2026-10-04 ολοκληρώθηκε η ρύθμιση στο υπάρχον Google Cloud project **My Project 10936** (`focused-stacker-219420`): branding **Group Trip Planner**, Audience **External**, κατάσταση **Testing**, Web client **Group Trip Planner Web**. Καταχωρίστηκαν τα τρία origins και το Supabase callback που ακολουθούν. Τα Client ID/Secret αποθηκεύτηκαν μόνο στον Google provider του Supabase και η λίστα providers επιβεβαίωσε **Google Enabled**. Η προηγούμενη εκκρεμότητα επιλογής project έχει λυθεί· δεν δημιουργήθηκε νέο project και δεν ενεργοποιήθηκε billing.
+Στις 2026-10-04 ολοκληρώθηκε η ρύθμιση στο υπάρχον Google Cloud project **My Project 10936** (`focused-stacker-219420`): branding **Group Trip Planner**, Audience **External / In production**, Web client **Group Trip Planner Web**. Καταχωρίστηκαν τα τρία origins και το Supabase callback που ακολουθούν. Τα Client ID/Secret αποθηκεύτηκαν μόνο στον Google provider του Supabase και η λίστα providers επιβεβαίωσε **Google Enabled**. Δεν δημιουργήθηκε νέο project και δεν ενεργοποιήθηκε billing.
 
-Πραγματική σύνδεση Google από το `http://127.0.0.1:4173/group-trip-planner/` ολοκληρώθηκε με έναν λογαριασμό: account chooser, κανονικό consent για όνομα/φωτογραφία/email και επιστροφή σε authenticated dashboard με μηδέν ομάδες, όπως αναμένεται για νέο χρήστη. Η ανανέωση της σελίδας διατήρησε τη σύνδεση και το URL ήταν καθαρό, χωρίς callback code/query. Δεν δοκιμάστηκαν ακόμη αποσύνδεση, production URL ή απομόνωση δύο λογαριασμών.
+Πραγματική σύνδεση Google πέρασε αρχικά στο τοπικό preview με νέο, κενό λογαριασμό. Μετά το deployment πέρασε και στο production URL με τον ιδιοκτήτη: σωστό callback origin, πρόσβαση στο ιδιωτικό ταξίδι με 53 δραστηριότητες, 13 διαμονές και 7 μετακινήσεις, διατήρηση συνεδρίας/πληθών μετά από reload και επιτυχής αποσύνδεση που καθάρισε το ιδιωτικό περιεχόμενο. Η διεύθυνση επέστρεψε καθαρή στη δημόσια σελίδα εισόδου.
 
 Το frontend χρησιμοποιεί `signInWithOAuth`. Χρειάζονται μόνο τα scopes `openid`, `https://www.googleapis.com/auth/userinfo.email` και `https://www.googleapis.com/auth/userinfo.profile`. Δεν ζητείται πρόσβαση στο Gmail. Οι παρακάτω ρυθμίσεις καταγράφονται για αναφορά· δεν χρειάζεται να δημιουργηθεί δεύτερος client.
 
@@ -43,26 +45,26 @@
 4. Στο Supabase **Authentication → Sign In / Providers → Google**, ενεργοποίησε τον provider και αποθήκευσε το Google Client ID και Client Secret. Το Client Secret μένει αποκλειστικά στη ρύθμιση provider· ποτέ σε `VITE_*`, frontend ή GitHub.
 5. Στο Supabase **URL Configuration**, κράτησε τα πλήρη app redirects του πίνακα, ιδίως το production και το preview. Το Google callback οδηγεί στο Supabase· το app redirect επιστρέφει στην εφαρμογή. [Επίσημες οδηγίες Supabase Google](https://supabase.com/docs/guides/auth/social-login/auth-google).
 
-Στο **Audience**, το UI επιβεβαιώνει **External / Testing** και μηδέν test users. Δεν έγινε **Publish app**· το κουμπί είναι ανενεργό και ζητά ολοκλήρωση του Branding. Αν προστεθούν επιπλέον OAuth scopes, δήλωσε εκεί τους test users. Για τα τρία βασικά scopes σύνδεσης παραπάνω, η Google προβλέπει εξαίρεση από τη λίστα test users και τη λήξη εξουσιοδότησης επτά ημερών. Πριν από **Publish app / In production**, ολοκλήρωσε το Branding και όποια επαλήθευση ζητήσει η κονσόλα. Η δημοσίευση του OAuth app είναι ξεχωριστή από το deployment του site. Η δημοσίευση homepage/πολιτικής απορρήτου δεν έχει επαληθευτεί. [Επίσημες οδηγίες Google για Audience και publishing](https://support.google.com/cloud/answer/15549945).
+Στο **Branding** αποθηκεύτηκαν το δημόσιο homepage, το privacy URL και το domain `inbacklog.github.io`. Το **Audience** επιβεβαιώνει **External / In production**. Η δημοσίευση του OAuth app ολοκληρώθηκε χωριστά από το Pages deployment· δεν αποτελεί ισχυρισμό ειδικής Google brand verification. [Επίσημες οδηγίες Google για Audience και publishing](https://support.google.com/cloud/answer/15549945).
 
-Εκκρεμούν Google αποσύνδεση, σύνδεση από το production URL και επιστροφή από σύνδεσμο πρόσκλησης με πραγματικό provider. Κατέγραψε αυτά τα hosted αποτελέσματα χωριστά από τα τοπικά mocks.
+Το Google sign-in εξακολουθεί να εμφανίζει το Supabase project domain· δεν ζητήθηκε ξεχωριστή brand verification και δεν εμφανίστηκε αποκλεισμός μη επαληθευμένης εφαρμογής. Εκκρεμεί η επιστροφή από σύνδεσμο πρόσκλησης με πραγματικό Google provider. Τα hosted αποτελέσματα καταγράφονται χωριστά από τα τοπικά mocks.
 
 ## 3. Build και Pages
 
 Ρύθμισε τα frontend build variables `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` και `VITE_BASE_PATH=/group-trip-planner/`. Μην προσθέσεις secret/service-role key. Εκτέλεσε τα checks και το build που ορίζει το `package.json`, και έλεγξε τη σελίδα με το ίδιο base path που θα δημοσιευτεί.
 
-Στις 2026-10-04 ορίστηκε ως source του GitHub Pages το **GitHub Actions**. Τα δύο δημόσια build variables αποθηκεύτηκαν και επιβεβαιώθηκαν στη λίστα repository variables. Push και deployment εκκρεμούν. Το workflow **Publish GitHub Pages (manual)** εκκινείται χειροκίνητα, εκτελεί unit/SQL tests, ελέγχει τη δημόσια configuration και χτίζει με `/group-trip-planner/`.
+Στις 2026-10-04 ορίστηκε ως source του GitHub Pages το **GitHub Actions** και αποθηκεύτηκαν τα δύο δημόσια build variables. Δημοσιεύτηκε το commit `aa82cd0375c6f0c156a4d7a335936ee854df6274` στο `main`, με επιβεβαιωμένη ταύτιση του tree με τον τοπικό κώδικα. Πέρασαν το [CI run 37189873784](https://github.com/inbacklog/group-trip-planner/actions/runs/37189873784) και το [Pages run 37189943142](https://github.com/inbacklog/group-trip-planner/actions/runs/37189943142). Το workflow **Publish GitHub Pages (manual)** παραμένει χειροκίνητο για μελλοντικές εκδόσεις.
 
-Η νέα σελίδα [`public/privacy.html`](../public/privacy.html) διαβάζεται χωρίς λογαριασμό και περιγράφει σύνδεση Google/Supabase, περιεχόμενο ομάδας, δικαιώματα πρόσβασης, browser storage, παρόχους και αιτήματα διαγραφής. Πέρασαν 4/4 τοπικά browser tests σε desktop/mobile. Ο προορισμός της μετά το deployment είναι `https://inbacklog.github.io/group-trip-planner/privacy.html`· η δημόσια διαθεσιμότητά της δεν έχει ακόμη επαληθευτεί.
+Η σελίδα [`public/privacy.html`](../public/privacy.html) διαβάζεται χωρίς λογαριασμό και περιγράφει σύνδεση Google/Supabase, περιεχόμενο ομάδας, δικαιώματα πρόσβασης, browser storage, παρόχους και αιτήματα διαγραφής. Πέρασαν 4/4 τοπικά browser tests σε desktop/mobile και επιβεβαιώθηκε η δημόσια πρόσβαση στο `https://inbacklog.github.io/group-trip-planner/privacy.html`.
 
 ### Σειρά δημοσίευσης και επιβεβαίωσης
 
 1. **Ολοκληρώθηκε:** το `.local/verify-hosted-rls.sql` έδωσε hosted PASS και rollback. Κάλυψε και τους 14 γεμάτους πίνακες, νέο/ξένο χρήστη, snapshots, author guards, προσκλήσεις μίας χρήσης/ανάκληση, αφαίρεση μέλους και διατήρηση owner. Δεν είναι migration ούτε δοκιμή δύο πραγματικών Auth/PostgREST sessions.
 2. **Ολοκληρώθηκε:** πραγματικό ιδιωτικό import μέσω app/Supabase από τον ιδιοκτήτη· το UI επιβεβαίωσε 53 δραστηριότητες, 13 διαμονές, 7 μετακινήσεις και 6 στάσεις. Πέρασαν επίσης 52/52 unit/SQL, 66/66 browser tests, typecheck, build/base path και SQL bundle check. Το import δεν αποτελεί μέρος του δημόσιου build.
-3. Έλεγξε τα staged αρχεία και το build για private dataset/credentials. Επιβεβαίωσε τα repository variables `VITE_SUPABASE_URL` και `VITE_SUPABASE_PUBLISHABLE_KEY`· κανένα Google Client Secret ή service-role key στο repository.
-4. Κάνε push του ελεγμένου κώδικα και εκκίνησε το χειροκίνητο Pages workflow στο σωστό branch. Κατέγραψε επιτυχή workflow run και deployment URL πριν θεωρηθεί δημοσιευμένο.
-5. Άνοιξε χωρίς σύνδεση το production app και το `/privacy.html`, έλεγξε assets/base path και ότι δεν εμφανίζεται ιδιωτικό περιεχόμενο. Δοκίμασε Google login, reload και logout στο production URL.
-6. Χρησιμοποίησε τα επαληθευμένα homepage/privacy URLs στο Google Branding. Το OAuth app παραμένει Testing μέχρι να ολοκληρωθούν οι απαιτήσεις της κονσόλας και να γίνει ρητά Publish app· το Pages deployment δεν το δημοσιεύει αυτόματα.
+3. **Ολοκληρώθηκε:** έλεγχος 73 αρχείων προς δημοσίευση και επιβεβαίωση των δύο δημόσιων repository variables· κανένα Google Client Secret ή ιδιωτικό dataset στο δημόσιο build.
+4. **Ολοκληρώθηκε:** κώδικας στο `main`, επιτυχή CI και Pages workflows και δημόσιο deployment.
+5. **Ολοκληρώθηκε:** production app/privacy χωρίς σύνδεση, Google login, ανάγνωση του ιδιωτικού ταξιδιού, reload και logout πέρασαν. Η αποσύνδεση επέστρεψε σε καθαρή σελίδα εισόδου χωρίς ιδιωτικό περιεχόμενο.
+6. **Ολοκληρώθηκε:** homepage/privacy/domain αποθηκεύτηκαν στο Google Branding και το OAuth app επιβεβαιώθηκε **External / In production**.
 
 Τα αποτελέσματα hosted SQL, ιδιωτικού import, δημόσιου deployment και Google publishing καταγράφονται χωριστά στο [TEST_REPORT](TEST_REPORT.md). Οι δύο πραγματικοί λογαριασμοί μέσω Auth/PostgREST και οι δοκιμές ταυτόχρονων αιτήσεων παραμένουν ξεχωριστοί έλεγχοι.
 

@@ -16,13 +16,15 @@
 | Read-only HTTP requests μετά την αναφορά εγκατάστασης, πριν από το Google setup | Auth settings **200**, Google provider **false** τότε, email provider **true**· groups endpoint **401** σε anonymous αίτημα, χωρίς πλήρη επαλήθευση RPC/grants/RLS |
 | `INSTALL_ALL.sql` στο hosted project | Εκτέλεση αναφέρθηκε από τον χρήστη στις 2026-10-04· read-only Table Editor επιβεβαιώνει τους 14 αναμενόμενους πίνακες στο `public`· δεν επανεκτελέστηκε SQL από τον agent |
 | Supabase Auth URL Configuration | Site URL και τέσσερα ακριβή redirects του `DEPLOYMENT.md` αποθηκεύτηκαν και επαληθεύτηκαν μέσω dashboard UI |
-| Google Cloud και Supabase provider dashboard | Στο υπάρχον project ρυθμίστηκαν branding Group Trip Planner, External/Testing και Web client Group Trip Planner Web· τρία origins και Supabase callback καταχωρίστηκαν· credentials αποθηκεύτηκαν στον Supabase provider και επιβεβαιώθηκε **Google Enabled** |
+| Google Cloud και Supabase provider dashboard | Στο υπάρχον project ρυθμίστηκαν branding Group Trip Planner, External/In production και Web client Group Trip Planner Web· τρία origins και Supabase callback καταχωρίστηκαν· credentials αποθηκεύτηκαν στον Supabase provider και επιβεβαιώθηκε **Google Enabled** |
 | Πραγματικό Google sign-in και reload | **PASS** με έναν λογαριασμό στο `http://127.0.0.1:4173/group-trip-planner/`: Google chooser/consent, επιστροφή σε authenticated dashboard με 0 ομάδες, διατήρηση συνεδρίας μετά από reload και καθαρό URL χωρίς code/query |
-| Google Audience UI | External / Testing, 0 test users· Publish app ανενεργό με απαίτηση ολοκλήρωσης Branding· δεν έγινε δημοσίευση OAuth app |
+| Production Google login/reload/logout | **PASS** με τον πραγματικό ιδιοκτήτη στο δημόσιο origin: πρόσβαση στο ιδιωτικό ταξίδι και πλήθη 53/13/7, διατήρηση auth/πληθών μετά από reload, logout σε καθαρό URL/σελίδα εισόδου χωρίς ιδιωτικό περιεχόμενο |
+| Google Audience και Branding UI | **External / In production** επιβεβαιώθηκε· homepage/privacy/domain αποθηκεύτηκαν |
 | Hosted verification script | **PASS** στο Supabase SQL Editor: deployed authenticated/auth.uid/RLS, δύο συνθετικές ταυτότητες, 14 populated tables, snapshots, author guards, προσκλήσεις/ανάκληση, αφαίρεση μέλους και owner preservation· όλα τα συνθετικά δεδομένα έγιναν rollback |
-| Pages settings και build variables | Pages source: **GitHub Actions**· και τα δύο δημόσια build variables αποθηκεύτηκαν/επιβεβαιώθηκαν· push/deployment εκκρεμούν |
+| Δημοσίευση κώδικα και CI | Remote `main`: `aa82cd0375c6f0c156a4d7a335936ee854df6274`, tree ίδιο με το τοπικό· [CI 37189873784](https://github.com/inbacklog/group-trip-planner/actions/runs/37189873784) **PASS** |
+| Pages deployment | Source **GitHub Actions**, δύο δημόσια build variables επιβεβαιώθηκαν· [Pages 37189943142](https://github.com/inbacklog/group-trip-planner/actions/runs/37189943142) **PASS**· production app εμφανίζει καθαρή σελίδα εισόδου χωρίς σύνδεση |
 | Πολιτική απορρήτου — τοπικά browser tests | **4/4 PASS** σε desktop/mobile, περιλαμβάνονται και στη νέα πλήρη εκτέλεση 66/66 |
-| Δημόσια πολιτική απορρήτου — hosted | Τοπική σελίδα/build ετοιμάστηκαν· hosted URL και production πρόσβαση **εκκρεμούν** |
+| Δημόσια πολιτική απορρήτου — hosted | **PASS**: `https://inbacklog.github.io/group-trip-planner/privacy.html` προσβάσιμο χωρίς σύνδεση |
 | Πραγματικό ιδιωτικό αρχείο και νέα rich fields | 73/73 εγγραφές μετατρέπονται σε επεξεργάσιμη παρουσίαση· 53/53 δραστηριότητες με επιλυμένους συνδέσμους πηγών |
 | Πραγματικό ιδιωτικό import μέσω app/Supabase | **PASS** από τον ιδιοκτήτη· UI: 53 δραστηριότητες, 13 διαμονές, 7 μετακινήσεις και 6 στάσεις· μετά από reload επιβεβαιώθηκαν ξανά τα 53/13/7 |
 
@@ -54,9 +56,7 @@
 
 - Πλήρης επαλήθευση μέσω PostgREST με δύο ανεξάρτητα εκδοθέντα Auth JWT/πραγματικούς λογαριασμούς. Το hosted SQL role/claim verification έχει περάσει με rollback, χωρίς επανεκτέλεση migration.
 - Εγγραφή, επιβεβαίωση email, password reset και δύο πραγματικοί λογαριασμοί Supabase Auth, με ρυθμισμένα SMTP/redirects.
-- Google αποσύνδεση, σύνδεση από το production URL και επιστροφή από πρόσκληση με πραγματικό provider· login και reload με έναν λογαριασμό στο preview πέρασαν.
+- Επιστροφή από πρόσκληση με πραγματικό Google provider· production login/reload/logout με τον ιδιοκτήτη πέρασαν.
 - Ταυτόχρονες αιτήσεις από ανεξάρτητες συνδέσεις, πραγματικός συγχρονισμός και συμπεριφορά δικτύου παραγωγής.
-- Push και επιτυχές Pages workflow· έλεγχος production app και `https://inbacklog.github.io/group-trip-planner/privacy.html` χωρίς σύνδεση. Τα δημόσια build variables έχουν επιβεβαιωθεί.
-- Ενημέρωση Google Branding με τα δημοσιευμένα homepage/privacy URLs και OAuth Publish app· το OAuth app παραμένει Testing.
 
-Οι αποθηκευμένες remote αλλαγές αφορούν τις ρυθμίσεις Auth/Google/Pages και την εγκεκριμένη ιδιωτική εισαγωγή από τον ιδιοκτήτη. Η πραγματική σύνδεση δημιούργησε φυσιολογικά τον Auth user μέσω Google consent, χωρίς admin signup. Το hosted SQL verification εκτελέστηκε και έγινε rollback. Δεν δημιουργήθηκε νέο Google project, δεν ενεργοποιήθηκε billing και δεν επανεκτελέστηκαν migrations ούτε στάλθηκαν πραγματικές προσκλήσεις. Push και deployment εκκρεμούν. Το επιτυχές hosted sign-in αφορά έναν λογαριασμό· η SQL προσομοίωση ρόλων/claims δεν αντικαθιστά δύο ανεξάρτητες Auth/PostgREST συνεδρίες. Το PGlite παρέχει χωριστούς τοπικούς SQL/RLS ελέγχους με shim του `auth.uid()`.
+Ολοκληρώθηκαν οι εγκεκριμένες ρυθμίσεις Auth/Google/Pages, το ιδιωτικό import, η δημοσίευση κώδικα και το production deployment. Η πραγματική σύνδεση δημιούργησε φυσιολογικά τον Auth user μέσω Google consent, χωρίς admin signup. Το hosted SQL verification εκτελέστηκε και έγινε rollback. Δεν δημιουργήθηκε νέο Google project, δεν ενεργοποιήθηκε billing και δεν επανεκτελέστηκαν migrations ούτε στάλθηκαν πραγματικές προσκλήσεις. Το Google sign-in εμφανίζει ακόμη το Supabase project domain, χωρίς unverified-app block· ξεχωριστή brand verification δεν ζητήθηκε. Τα επιτυχή preview/production sign-ins αφορούν έναν πραγματικό λογαριασμό· η SQL προσομοίωση ρόλων/claims δεν αντικαθιστά δύο ανεξάρτητες Auth/PostgREST συνεδρίες. Το PGlite παρέχει χωριστούς τοπικούς SQL/RLS ελέγχους με shim του `auth.uid()`.
