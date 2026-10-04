@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="description"
+      content="Πώς το Group Trip Planner χρησιμοποιεί τα στοιχεία σύνδεσης και το ιδιωτικό περιεχόμενο των ταξιδιωτικών ομάδων."
+    />
+    <title>Πολιτική απορρήτου · Group Trip Planner</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: #294438;
+        background: #f8f8f3;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.85;
+      }
+      a {
+        color: #285a43;
+        text-underline-offset: 3px;
+        overflow-wrap: anywhere;
+      }
+      a:hover {
+        color: #183b2c;
+      }
+      a:focus-visible {
+        outline: 3px solid #bc805c;
+        outline-offset: 5px;
+        border-radius: 3px;
+      }
+      .skip-link {
+        position: absolute;
+        top: -80px;
+        left: 18px;
+        padding: 9px 14px;
+        background: #fff;
+        z-index: 2;
+      }
+      .skip-link:focus {
+        top: 12px;
+      }
+      header,
+      main,
+      footer {
+        width: min(100% - 44px, 790px);
+        margin-inline: auto;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        padding: 34px 0 28px;
+        border-bottom: 1px solid #e1e6d9;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #244e42;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 13px 13px 13px 4px;
+        background: #244e42;
+        color: #fffdf5;
+      }
+      .brand small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: #68766c;
+        letter-spacing: 0.03em;
+      }
+      .back {
+        font-size: 13px;
+      }
+      main {
+        padding-top: 44px;
+        padding-bottom: 24px;
+      }
+      .eyebrow {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: #68785c;
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-size: clamp(30px, 6vw, 42px);
+        line-height: 1.25;
+        letter-spacing: -0.045em;
+        margin: 0 0 15px;
+      }
+      h2 {
+        font-size: 23px;
+        line-height: 1.5;
+        letter-spacing: -0.025em;
+        margin: 0 0 14px;
+      }
+      p {
+        margin: 0 0 17px;
+      }
+      .updated {
+        font-size: 13px;
+        color: #68766c;
+        margin-bottom: 28px;
+      }
+      .summary {
+        padding: 24px 26px;
+        background: #eef2e6;
+        border: 1px solid #dee6d3;
+        border-radius: 14px;
+        margin: 25px 0 30px;
+      }
+      .summary p:last-child {
+        margin-bottom: 0;
+      }
+      .summary strong {
+        color: #35593e;
+      }
+      nav {
+        display: flex;
+        gap: 8px 20px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid #e1e6d9;
+      }
+      section {
+        padding-top: 32px;
+        scroll-margin-top: 24px;
+      }
+      ul {
+        padding-left: 23px;
+        margin: 0 0 18px;
+      }
+      li {
+        padding-left: 4px;
+        margin: 9px 0;
+      }
+      .contact-note {
+        padding: 16px 20px;
+        border-left: 3px solid #b98562;
+        background: #f7f0e5;
+        border-radius: 0 9px 9px 0;
+        color: #705a43;
+        font-size: 14px;
+      }
+      .provider-links {
+        font-size: 14px;
+        color: #68766c;
+      }
+      code {
+        font-size: 0.92em;
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px 25px;
+        border-top: 1px solid #e1e6d9;
+        padding: 25px 0 34px;
+        font-size: 13px;
+        color: #68766c;
+      }
+      @media (max-width: 520px) {
+        header,
+        main,
+        footer {
+          width: calc(100% - 36px);
+        }
+        header {
+          padding: 26px 0 23px;
+          gap: 15px;
+        }
+        .brand {
+          font-size: 15px;
+        }
+        .back {
+          font-size: 12px;
+          max-width: 130px;
+          text-align: right;
+        }
+        main {
+          padding-top: 34px;
+        }
+        h2 {
+          font-size: 21px;
+        }
+        .summary {
+          padding: 21px;
+        }
+        nav {
+          gap: 10px 19px;
+        }
+        section {
+          padding-top: 28px;
+        }
+        footer {
+          padding-bottom: 28px;
+        }
+      }
+      @media print {
+        body {
+          background: white;
+          color: black;
+          font-size: 12pt;
+        }
+        header,
+        main,
+        footer {
+          width: 100%;
+        }
+        nav,
+        .skip-link,
+        .back {
+          display: none;
+        }
+        .summary {
+          border: 1px solid #aaa;
+          background: white;
+        }
+        section {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Μετάβαση στο περιεχόμενο</a>
+    <header>
+      <a
+        class="brand"
+        href="./"
+        aria-label="Group Trip Planner — αρχική σελίδα"
+      >
+        <span class="brand-mark" aria-hidden="true"
+          ><svg
+            width="23"
+            height="23"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg
+        ></span>
+        <span>Group Trip<small>Planner</small></span>
+      </a>
+      <a class="back" href="./">Επιστροφή στην εφαρμογή</a>
+    </header>
+    <main id="content">
+      <span class="eyebrow">Ο ΔΙΚΟΣ ΣΑΣ ΧΩΡΟΣ, ΜΕ ΣΑΦΕΙΣ ΠΛΗΡΟΦΟΡΙΕΣ.</span>
+      <h1>Πολιτική απορρήτου</h1>
+      <p class="updated">
+        Group Trip Planner · Τελευταία ενημέρωση:
+        <time datetime="2026-10-04">4 Οκτωβρίου 2026</time>
+      </p>
+      <div class="summary">
+        <p>
+          <strong>Μια δημόσια εφαρμογή για ιδιωτικές παρέες.</strong> Το Group
+          Trip Planner βοηθά ομάδες να οργανώνουν ταξίδια, να κρατούν προτάσεις
+          και να αποφασίζουν μαζί. Τα στοιχεία σύνδεσης χρησιμοποιούνται για τον
+          λογαριασμό σου και το περιεχόμενο κάθε ομάδας μοιράζεται με τα μέλη
+          της.
+        </p>
+        <p>
+          Η δημόσια σελίδα σύνδεσης και αυτή η ενημέρωση δεν δημοσιεύουν τα
+          ταξίδια σας. Μπορείς να διαβάσεις αυτή τη σελίδα χωρίς λογαριασμό.
+        </p>
+      </div>
+      <nav aria-label="Ενότητες πολιτικής απορρήτου">
+        <a href="#account">Σύνδεση</a
+        ><a href="#content-data">Περιεχόμενο ομάδας</a
+        ><a href="#access">Πρόσβαση</a
+        ><a href="#providers">Πάροχοι και browser</a
+        ><a href="#retention">Διατήρηση και εξαγωγή</a
+        ><a href="#contact">Επικοινωνία</a>
+      </nav>
+
+      <section id="account" aria-labelledby="account-title">
+        <h2 id="account-title">1. Τα στοιχεία σύνδεσής σου</h2>
+        <p>
+          Η ταυτοποίηση γίνεται μέσω του Supabase Auth. Με σύνδεση Google, το
+          Supabase λαμβάνει το αναγνωριστικό του λογαριασμού σου, το email και
+          βασικά στοιχεία προφίλ που επιστρέφει η Google, όπως όνομα και εικόνα
+          προφίλ. Αυτά συνδέονται με τον λογαριασμό της εφαρμογής για να μπορείς
+          να συνδέεσαι και να αναγνωρίζεται η πρόσβασή σου.
+        </p>
+        <p>
+          Ζητούνται μόνο τα βασικά δικαιώματα σύνδεσης <code>openid</code>,
+          email και profile. Η εφαρμογή δεν ζητά πρόσβαση στα μηνύματα Gmail,
+          στις επαφές, στο Google Drive ή στο ημερολόγιό σου. Με σύνδεση email,
+          το email και ο κωδικός υποβάλλονται στο Supabase Auth· η βάση των
+          ταξιδιών δεν έχει πεδίο αποθήκευσης κωδικών.
+        </p>
+        <p>
+          Μπορείς να επιλέξεις εμφανιζόμενο όνομα από «Ο λογαριασμός μου» για όλες τις ομάδες και προαιρετικό διαφορετικό ψευδώνυμο ανά ομάδα. Το email σου
+          δεν εμφανίζεται στον κατάλογο των άλλων μελών. Το όνομα ομάδας και τα
+          στοιχεία ταξιδιού δεν αποστέλλονται ως στοιχεία του αιτήματος σύνδεσης
+          Google.
+        </p>
+      </section>
+
+      <section id="content-data" aria-labelledby="content-title">
+        <h2 id="content-title">2. Όσα προσθέτετε στην παρέα</h2>
+        <p>
+          Αποθηκεύουμε στο Supabase το περιεχόμενο που εσείς καταχωρίζετε ή
+          επιβεβαιώνετε για εισαγωγή: ομάδες και μέλη, ρόλους, ταξίδια και
+          ημερομηνίες, στάσεις, προτάσεις, διαμονές, μετακινήσεις, πηγές,
+          συνδέσμους και σημειώσεις.
+        </p>
+        <p>
+          Αποθηκεύονται επίσης η συμμετοχή σε ταξίδι, οι προτιμήσεις και η
+          προσωπική προτεραιότητα, τα σχόλια, το πρόγραμμα ανά ημέρα και οι
+          εγκρίσεις του προγράμματος. Οι καταχωρίσεις συνδέονται με
+          αναγνωριστικά λογαριασμών και χρονικές σημάνσεις ώστε να λειτουργεί η
+          συνεργασία και ο έλεγχος αλλαγών.
+        </p>
+        <p>
+          <strong
+            >Οι σημειώσεις προτίμησης και τα σχόλια είναι ορατά στην
+            ομάδα.</strong
+          >
+          Δεν είναι ιδιωτικό ημερολόγιο μόνο για εσένα. Πρόσθετε στοιχεία που
+          θέλετε να μοιραστείτε με την παρέα και αποφύγετε περιττά προσωπικά
+          δεδομένα άλλων ανθρώπων.
+        </p>
+        <p>
+          Ένα αρχείο εισαγωγής διαβάζεται πρώτα στον browser για προεπισκόπηση.
+          Το περιεχόμενο του ταξιδιού αποστέλλεται στη βάση όταν επιβεβαιώσεις
+          την εισαγωγή στην επιλεγμένη ομάδα.
+        </p>
+      </section>
+
+      <section id="access" aria-labelledby="access-title">
+        <h2 id="access-title">3. Ποιος έχει πρόσβαση</h2>
+        <p>
+          Η πρόσβαση στο περιεχόμενο μιας ομάδας απαιτεί συνδεδεμένο λογαριασμό
+          και τρέχουσα συμμετοχή στην ομάδα. Η δήλωση «δεν θα έρθω» σε ένα
+          ταξίδι αλλάζει τη συμμετοχή και τα σύνολα προτιμήσεων· δεν αφαιρεί την
+          πρόσβαση του μέλους στην ομάδα.
+        </p>
+        <p>
+          Οι ιδιοκτήτες και οι διαχειριστές μπορούν να διαχειρίζονται την ομάδα,
+          τις προσκλήσεις και το κοινό περιεχόμενο σύμφωνα με τα δικαιώματά
+          τους. Οι διαχειριστές της τεχνικής εγκατάστασης και οι πάροχοι
+          υποδομής μπορούν επίσης να έχουν τεχνική πρόσβαση για τη λειτουργία
+          και υποστήριξη της υπηρεσίας.
+        </p>
+        <p>
+          Οι σύνδεσμοι πρόσκλησης είναι μίας χρήσης, λήγουν σε επτά ημέρες και
+          πρέπει να κοινοποιούνται μόνο στο επιθυμητό νέο μέλος. Ένα μέλος
+          μπορεί να αντιγράψει πληροφορίες ή να εξαγάγει πρόγραμμα στη συσκευή
+          του. Η αφαίρεσή του από την ομάδα δεν ανακαλεί αντίγραφα που έχει ήδη
+          αποθηκεύσει.
+        </p>
+      </section>
+
+      <section id="providers" aria-labelledby="providers-title">
+        <h2 id="providers-title">
+          4. Υποδομή, browser και εξωτερικοί σύνδεσμοι
+        </h2>
+        <ul>
+          <li>
+            <strong>GitHub Pages:</strong> φιλοξενεί τα δημόσια αρχεία της
+            εφαρμογής και αυτή τη σελίδα. Τα δεδομένα των ομάδων ανακτώνται
+            χωριστά από το Supabase και δεν αποτελούν μέρος των δημόσιων αρχείων
+            του site.
+          </li>
+          <li>
+            <strong>Supabase:</strong> παρέχει τη σύνδεση και τη βάση δεδομένων.
+            <strong>Google:</strong> συμμετέχει όταν επιλέγεις σύνδεση με
+            Google. Οι υπηρεσίες αυτές λαμβάνουν τεχνικά στοιχεία των αιτημάτων,
+            όπως συμβαίνει κατά τη σύνδεση σε μια διαδικτυακή υπηρεσία.
+          </li>
+          <li>
+            <strong>Μετατροπή νομισμάτων:</strong> η εφαρμογή ζητά δημόσιες
+            ισοτιμίες αναφοράς της ΕΚΤ από το Frankfurter. Αποστέλλεται μόνο το
+            ζεύγος νομισμάτων (π.χ. CNY/EUR), όχι ονόματα, email, ποσά,
+            στοιχεία ταξιδιού ή διαπιστευτήρια. Όπως σε κάθε δικτυακή σύνδεση,
+            ο πάροχος υποδομής λαμβάνει τεχνικά τη διεύθυνση IP.
+            Οι δημόσιες ισοτιμίες μπορούν να αποθηκεύονται τοπικά στον browser
+            για λιγότερες κλήσεις και ενδεικτική προβολή χωρίς σύνδεση. Δεν
+            αποθηκεύεται ιδιωτικό περιεχόμενο ταξιδιού σε αυτή την cache.
+            <a href="https://frankfurter.dev/" rel="noreferrer">Πληροφορίες Frankfurter</a>.
+          </li>
+          <li>
+            <strong>Αποθήκευση στον browser:</strong> η συνεδρία σύνδεσης
+            αποθηκεύεται σε <code>localStorage</code> για να παραμένεις
+            συνδεδεμένος μετά από ανανέωση. Ο προσωρινός κωδικός μιας πρόσκλησης
+            κρατιέται σε <code>sessionStorage</code> κατά τη σύνδεση και
+            αφαιρείται από το URL. Χρησιμοποίησε αποσύνδεση σε κοινόχρηστη
+            συσκευή· η διαγραφή των δεδομένων του site στον browser αφαιρεί την
+            τοπική συνεδρία, όχι τον λογαριασμό στη βάση.
+          </li>
+          <li>
+            <strong>Φωτογραφίες και πηγές:</strong> οι φωτογραφίες που
+            προσθέτουν μέλη ως εξωτερικούς συνδέσμους φορτώνονται από τον
+            αντίστοιχο τρίτο ιστότοπο. Εκείνος μπορεί να λάβει τη διεύθυνση IP
+            και τεχνικά στοιχεία του browser σου. Οι εικόνες ζητούνται χωρίς
+            αποστολή της διεύθυνσης της σελίδας ως referrer. Ανοίγοντας έναν
+            εξωτερικό σύνδεσμο εφαρμόζεται η πολιτική του προορισμού.
+          </li>
+        </ul>
+        <p>
+          Η εφαρμογή δεν προσθέτει εργαλεία διαφημιστικής παρακολούθησης ή
+          υπηρεσία analytics. Αυτό δεν καταργεί τα τεχνικά αρχεία καταγραφής των
+          παρόχων φιλοξενίας και σύνδεσης.
+        </p>
+        <p class="provider-links">
+          Πληροφορίες παρόχων:
+          <a
+            href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+            rel="noreferrer"
+            >GitHub</a
+          >,
+          <a href="https://supabase.com/privacy" rel="noreferrer">Supabase</a>,
+          <a href="https://policies.google.com/privacy" rel="noreferrer"
+            >Google</a
+          >. Οι πολιτικές τους περιγράφουν τον δικό τους χειρισμό δεδομένων· η
+          παρούσα σελίδα περιγράφει τη χρήση τους από το Group Trip Planner.
+        </p>
+      </section>
+
+      <section id="retention" aria-labelledby="retention-title">
+        <h2 id="retention-title">5. Διατήρηση, αλλαγές και εξαγωγή</h2>
+        <p>
+          Δεν έχει οριστεί αυτόματη διαγραφή λογαριασμών ή ταξιδιών μετά από
+          συγκεκριμένο χρονικό διάστημα. Το περιεχόμενο παραμένει μέχρι να
+          διαγραφεί μέσω διαθέσιμης λειτουργίας από εξουσιοδοτημένο χρήστη ή να
+          αντιμετωπιστεί χειροκίνητα σχετικό αίτημα.
+        </p>
+        <p>
+          Μπορείς να διορθώσεις το εμφανιζόμενο όνομά σου, να αλλάξεις ή να
+          καθαρίσεις προτιμήσεις και να επεξεργαστείς ή να διαγράψεις τα δικά
+          σου σχόλια. Η αφαίρεση μέλους δεν διαγράφει τις κοινές προτάσεις και
+          τα σχόλιά του. Οι δικές του προτιμήσεις και εγκρίσεις αφαιρούνται όταν
+          αφαιρεθεί από την ομάδα.
+        </p>
+        <p>
+          Στην ενότητα «Πρόγραμμα» διατίθεται λήψη τοπικού αντιγράφου σε JSON ή
+          HTML. Το αντίγραφο περιλαμβάνει το τρέχον πρόγραμμα και σχετικές
+          πληροφορίες· δεν αποτελεί πλήρη εξαγωγή λογαριασμού ή δημόσιο
+          σύνδεσμο. Εσύ αποφασίζεις πού θα το αποθηκεύσεις και με ποιους θα το
+          μοιραστείς.
+        </p>
+        <p>
+          Δεν υπάρχει ακόμη κουμπί διαγραφής λογαριασμού στην εφαρμογή. Για
+          πρόσβαση σε άλλα προσωπικά στοιχεία, διόρθωση ή αίτημα διαγραφής,
+          επικοινώνησε με τον συντηρητή όπως περιγράφεται παρακάτω. Τα αιτήματα
+          χρειάζονται χειροκίνητο χειρισμό, ιδιαίτερα όταν αφορούν κοινό
+          περιεχόμενο άλλων μελών. Τυχόν αντίγραφα ασφαλείας και τεχνικά αρχεία
+          καταγραφής των παρόχων ακολουθούν τις δικές τους ρυθμίσεις διατήρησης.
+        </p>
+      </section>
+
+      <section id="contact" aria-labelledby="contact-title">
+        <h2 id="contact-title">6. Επικοινωνία και ενημερώσεις</h2>
+        <p>
+          Το έργο συντηρείται από τον λογαριασμό
+          <a href="https://github.com/inbacklog" rel="noreferrer"
+            >inbacklog στο GitHub</a
+          >. Για ερώτηση απορρήτου ή αίτημα σχετικά με τον λογαριασμό σου,
+          μπορείς να
+          <a
+            href="https://github.com/inbacklog/group-trip-planner/issues/new"
+            rel="noreferrer"
+            >ανοίξεις ένα γενικό αίτημα επικοινωνίας στο αποθετήριο</a
+          >
+          και να ζητήσεις ιδιωτικό τρόπο επικοινωνίας.
+        </p>
+        <p class="contact-note">
+          Τα GitHub issues είναι δημόσια. Μην δημοσιεύσεις email λογαριασμού,
+          κωδικό, σύνδεσμο πρόσκλησης ή προσωπικές πληροφορίες ταξιδιού. Για
+          χειρισμό συγκεκριμένων δεδομένων θα χρειαστεί κατάλληλο ιδιωτικό
+          κανάλι και, όπου απαιτείται, επιβεβαίωση της ταυτότητας του αιτούντος.
+        </p>
+        <p>
+          Η σελίδα θα ενημερώνεται όταν αλλάζει ο χειρισμός των δεδομένων από
+          την εφαρμογή. Η ημερομηνία στο πάνω μέρος δείχνει την τελευταία
+          αλλαγή.
+        </p>
+      </section>
+    </main>
+    <footer>
+      <span>Group Trip Planner</span><a href="./">Επιστροφή στην εφαρμογή</a
+      ><a
+        href="https://github.com/inbacklog/group-trip-planner"
+        rel="noreferrer"
+        >Το έργο στο GitHub</a
+      >
+    </footer>
+  </body>
+</html>

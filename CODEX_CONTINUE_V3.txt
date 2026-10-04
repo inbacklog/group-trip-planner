@@ -1,0 +1,21 @@
+Συνέχισε το υπάρχον Group Trip Planner από την ενημέρωση v3. Μην ξαναστήσεις την εφαρμογή από το μηδέν.
+
+Διάβασε AGENTS.md, τον τρέχοντα κώδικα, UPGRADE_V3_EL.md, docs/UPGRADE_V3_MANIFEST.json και docs/UPGRADE_V3_TEST_REPORT.md. Η τρέχουσα υλοποίηση υπερισχύει παλιών προδιαγραφών handoff. Οι αλλαγές της v3 έχουν ήδη γραφτεί, δεν είναι απλώς προτάσεις:
+- προφίλ/εμφανιζόμενο όνομα από “Ο λογαριασμός μου”, με προαιρετικό ψευδώνυμο ανά ομάδα,
+- μετονομασία ομάδας για owner/admin μέσω version-checked RPC,
+- κόστος στην αρχική μονάδα και ενδεικτικά σε EUR, source/date, range/unknown/zero handling και συντηρητικό legacy fallback,
+- route-stop click → φίλτρο ιδεών, counts/clear/keyboard, προεπιλογή στάσης στη νέα ιδέα, είδη ιδέας και αναζήτηση χωρίς τόνους.
+
+Διατήρησε τυχόν νεότερες αλλαγές του repository. Το patch βασίζεται στο ZIP του χρήστη. Έλεγξε διαφορές/hashes αντί να σβήσεις το repository ή να αντικαταστήσεις τυφλά νεότερα αρχεία.
+
+Πρώτα κάνε καθαρή εγκατάσταση με Node 24 και την ήδη δηλωμένη έκδοση pnpm, με pnpm install --frozen-lockfile. Μη χρησιμοποιήσεις τα Windows node_modules του ZIP. Εκτέλεσε pnpm sql:check, pnpm typecheck, pnpm test, pnpm build, pnpm exec playwright install --with-deps chromium και pnpm test:browser. Διόρθωσε πραγματικά σφάλματα, όχι αφαιρώντας assertions/ασφάλεια. Εδώ πέρασαν 63 logic/database tests και typecheck, αλλά το production build και το πλήρες browser suite δεν επαληθεύτηκαν λόγω περιορισμών του περιβάλλοντος. Τα browser tests χρησιμοποιούν synthetic transport mocks, όχι live Supabase.
+
+Έλεγξε desktop/mobile πραγματικά: account name persist/alias override/clear, owner/admin rename, stale version errors, cross-group/self-only read-write, route filter toggle/search/clear/default stop, numeric cost edit/unknown/free/ranges/EUR dates and failures. Πρόσθεσε checks για μακριά ελληνικά ονόματα, keyboard και σκέτο μέλος. Έλεγξε και τις παλιές ροές σύνδεσης, ιδιωτικής εισαγωγής, προτιμήσεων, προγράμματος και offline export.
+
+Σε ΥΠΑΡΧΟΥΣΑ βάση εφαρμόζεται μόνο supabase/migrations/202610040003_profiles_group_names.sql, αφού ελεγχθούν οι προηγούμενες 001/002. Το supabase/INSTALL_ALL.sql προορίζεται ΜΟΝΟ για ολοκαίνουργια άδεια εγκατάσταση. Αν το profiles ή άλλη αλλαγή υπάρχει ήδη, εξέτασε το πραγματικό schema· μην προτείνεις DROP/reset ή απενεργοποίηση RLS. Νέα ονόματα δεν πρέπει να αλλάζουν IDs, ρόλους, ιδιωτικότητα, προσκλήσεις ή ψήφους. Τα δημόσια profiles δεν είναι directory: ο χρήστης διαβάζει μόνο το δικό του προφίλ, τα μέλη της ομάδας διαβάζουν μόνο την προβολή ονόματος στη συμμετοχή τους. Μην επαναφέρεις το direct UPDATE(name) grant που παρακάμπτει version checks.
+
+Το πραγματικό ταξίδι του ιδιοκτήτη και το PRIVATE_NOT_FOR_GIT παραμένουν ιδιωτικά. Μη δημοσιεύσεις παλιό data.json, .env.local, κλειδιά, screenshots με πραγματικά στοιχεία ή υπολογισμένα ποσά του ταξιδιού. Το πρότυπο νέου China trip παραμένει μόνο Σαγκάη και Πεκίνο. Μην εισάγεις τη δική μας ιδιωτική διαδρομή σε νέους χρήστες.
+
+Οι ισοτιμίες είναι ενδεικτικές ΕΚΤ μέσω Frankfurter v2 (δεν απαιτείται key), όχι transaction quotes. Μη hardcode τη συνθετική ισοτιμία 0.125 των tests ως πραγματική. Αντιμετώπισε CORS/network/unsupported currencies με σαφή unavailable/cached state. Αν δεις free-text κόστος, μη μαντεύεις από αυθαίρετους αριθμούς. Διατήρησε προέλευση και ημερομηνίες των legacy πληροφοριών.
+
+Μην αλλάξεις συνδρομές/visibility, μη στείλεις προσκλήσεις, μη δημοσιεύσεις ή μεταβάλεις remote Supabase χωρίς ρητή έγκριση. Δώσε ελεγμένο diff/PR και σύντομες τελικές οδηγίες στα ελληνικά: τι υλοποιήθηκε, τι ελέγχθηκε πραγματικά, τι εκκρεμεί και ποια ακριβώς κουμπιά πατάει ο ιδιοκτήτης.

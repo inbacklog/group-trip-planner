@@ -1,0 +1,50 @@
+/* Small, additive improvements: retain the existing visual identity. */
+.user-account-button { display:flex; align-items:center; gap:10px; min-width:0; flex:1; border:0; background:transparent; text-align:left; color:inherit; padding:4px; cursor:pointer; border-radius:10px; }
+.user-account-button:hover { background:#f1f3ed; }
+.user-account-copy { display:grid; min-width:0; gap:3px; }
+.user-account-copy strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.user-account-copy small { font-size:11px; color:#697166; }
+.topbar-actions { display:flex; align-items:center; gap:14px; }
+.account-email { overflow-wrap:anywhere; font-size:13px; }
+.editable-group-name { display:flex; align-items:center; gap:12px; min-width:0; }
+.editable-group-name h1 { overflow-wrap:anywhere; }
+.editable-group-name .icon-button { flex-shrink:0; }
+.stop-card { position:relative; }
+.stop-card .stop-select { width:100%; border:0; background:none; color:inherit; text-align:left; font:inherit; padding:0; cursor:pointer; border-radius:9px; }
+.stop-select:focus-visible { outline:3px solid #657d48; outline-offset:6px; }
+.stop-card.selected-stop { border-color:#647b4a; box-shadow:0 0 0 2px #647b4a; background:#f3f6ed; }
+.stop-filter-hint { display:block; margin-top:8px; font-size:11px; color:#526d37; font-weight:600; }
+.ideas-heading { font-size:20px; scroll-margin-top:90px; margin:24px 0 6px; }
+.ideas-heading:focus-visible { outline:2px solid #647b4a; outline-offset:5px; }
+.filter-summary { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 18px; flex-wrap:wrap; }
+.filter-summary p { color:#5f6a5b; font-size:13px; margin:0; }
+.filter-summary .text-button { display:inline-flex; align-items:center; gap:5px; }
+.catalog-toolbar { flex-wrap:wrap; }
+.catalog-toolbar .kind-filter { max-width:190px; width:auto; }
+.money-block { display:grid; gap:3px; margin:12px 0; line-height:1.5; }
+.money-original { font-size:14px; font-weight:650; color:#374433; }
+.money-original > span { font-size:11px; font-weight:400; }
+.money-euro { font-size:13px; color:#5f744b; }
+.money-unknown { font-size:11px; color:#757b70; }
+.money-detail { margin:12px 0 20px; padding:17px 19px; background:#f4f6ef; border:1px solid #e1e6d8; border-radius:14px; }
+.money-values { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+.money-values strong { font-size:21px; color:#374433; }
+.money-values > span { font-size:20px; color:#61794a; }
+.money-detail p { font-size:12px; margin:7px 0; line-height:1.6; }
+.money-source { color:#65715c; }
+.money-detail .field-help { margin-top:9px; }
+.money-fields { border:1px solid #dfe5d6; padding:16px; border-radius:12px; margin:20px 0; min-width:0; }
+.money-fields legend { font-size:13px; font-weight:650; padding:0 6px; }
+.money-input-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+.money-input-grid label { min-width:0; }
+@media (max-width:650px) {
+  .topbar-actions { gap:5px; }
+  .topbar-actions .private-label { display:none; }
+  .topbar-actions .button { font-size:11px; padding:8px; }
+  .editable-group-name { gap:6px; }
+  .catalog-toolbar .kind-filter { max-width:none; flex:1; min-width:130px; }
+  .money-input-grid { grid-template-columns:1fr; }
+  .money-detail { padding:14px; }
+}
+
+.money-original, .money-euro, .money-values, .money-source { overflow-wrap:anywhere; min-width:0; }
